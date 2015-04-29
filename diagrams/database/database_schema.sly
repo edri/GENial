@@ -3,7 +3,7 @@
   <diagramElements name="GEN - Projet - Base de données">
     <entity entityType="ASSOCIATION_CLASS" id="10940" isAbstract="false" name="result" visibility="PUBLIC">
       <attribute const="false" defaultValue="" isStatic="false" name="score" type="-" visibility="PRIVATE"/>
-      <attribute const="false" defaultValue="" isStatic="false" name="diceScore" type="-" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="dice_score" type="-" visibility="PRIVATE"/>
       <associationClassID>10868</associationClassID>
     </entity>
     <association aggregation="NONE" direction="BIDIRECTIONAL" id="10487" name="participe à ^">
@@ -23,8 +23,8 @@
     <association aggregation="NONE" direction="BIDIRECTIONAL" id="10718" name="Génère &gt;">
       <role componentId="10234" name="" visibility="PRIVATE">
         <multiplicity>
-          <min>2147483647</min>
-          <max>2147483647</max>
+          <min>1</min>
+          <max>1</max>
         </multiplicity>
       </role>
       <role componentId="10232" name="" visibility="PRIVATE">
@@ -252,19 +252,19 @@
       <roleAssociation>
         <x>345</x>
         <y>185</y>
-        <w>0</w>
+        <w>30</w>
         <h>17</h>
       </roleAssociation>
       <roleAssociation>
         <x>675</x>
         <y>185</y>
-        <w>0</w>
+        <w>30</w>
         <h>17</h>
       </roleAssociation>
       <multipliciteAssociation>
         <x>345</x>
         <y>158</y>
-        <w>7</w>
+        <w>8</w>
         <h>17</h>
       </multipliciteAssociation>
       <multipliciteAssociation>
