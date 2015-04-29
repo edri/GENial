@@ -1,0 +1,19 @@
+La description ci-dessous est une étape transitoire entre le schéma UML qui décrit la structure de la base de données et l'écriture en SQL des procédures de création de la base de données.
+Elle permet de spécifier les contraintes relationnelles qui ne sont pas directement traduisibles en SQL.
+
+Les attributs sont séparés par des virgules. Notation : les clés primaires sont entourées d'underscores (_).
+
+game(_id_, creator, difficulty, squares, date_created)
+mini_game(_id_, name)
+player(_id_, username, password)
+player_game(_game, player_)
+result(_player, turn_, score, dice_score)
+turn(_id_, game, seed, mini_game)
+
+game.creator référence player.id
+player_game.game référence game.id
+player_game.player référence player.id
+result.player référence player.id
+result.turn référence turn.id
+turn.game référence game.id
+turn.mini_game référence mini_game.id
