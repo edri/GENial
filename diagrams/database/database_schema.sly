@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="iso-8859-15" standalone="no"?>
 <classDiagram>
   <diagramElements name="GEN - Projet - Base de données">
-    <entity entityType="ASSOCIATION_CLASS" id="10940" isAbstract="false" name="Resultat" visibility="PUBLIC">
+    <entity entityType="ASSOCIATION_CLASS" id="10940" isAbstract="false" name="result" visibility="PUBLIC">
       <attribute const="false" defaultValue="" isStatic="false" name="score" type="-" visibility="PRIVATE"/>
-      <attribute const="false" defaultValue="" isStatic="false" name="resultatDé" type="-" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="diceScore" type="-" visibility="PRIVATE"/>
       <associationClassID>10868</associationClassID>
     </entity>
     <association aggregation="NONE" direction="BIDIRECTIONAL" id="11179" name="administrée par &gt;">
@@ -76,22 +76,22 @@
         </multiplicity>
       </role>
     </association>
-    <entity entityType="CLASS" id="10988" isAbstract="false" name="MiniJeu" visibility="PUBLIC">
+    <entity entityType="CLASS" id="10988" isAbstract="false" name="mini_game" visibility="PUBLIC">
       <attribute const="false" defaultValue="" isStatic="true" name="id" type="-" visibility="PRIVATE"/>
-      <attribute const="false" defaultValue="" isStatic="false" name="nom" type="-" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="name" type="-" visibility="PRIVATE"/>
     </entity>
-    <entity entityType="CLASS" id="10234" isAbstract="false" name="Partie" visibility="PUBLIC">
+    <entity entityType="CLASS" id="10234" isAbstract="false" name="game" visibility="PUBLIC">
       <attribute const="false" defaultValue="" isStatic="true" name="id" type="-" visibility="PRIVATE"/>
-      <attribute const="false" defaultValue="" isStatic="false" name="difficulté" type="-" visibility="PRIVATE"/>
-      <attribute const="false" defaultValue="" isStatic="false" name="nbCases" type="-" visibility="PRIVATE"/>
-      <attribute const="false" defaultValue="" isStatic="false" name="nom" type="-" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="difficulty" type="-" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="squares" type="-" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="name" type="-" visibility="PRIVATE"/>
     </entity>
-    <entity entityType="CLASS" id="10233" isAbstract="false" name="Joueur" visibility="PUBLIC">
+    <entity entityType="CLASS" id="10233" isAbstract="false" name="player" visibility="PUBLIC">
       <attribute const="false" defaultValue="" isStatic="true" name="id" type="-" visibility="PRIVATE"/>
-      <attribute const="false" defaultValue="" isStatic="false" name="pseudonyme" type="-" visibility="PRIVATE"/>
-      <attribute const="false" defaultValue="" isStatic="false" name="motDePasse" type="-" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="username" type="-" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="password" type="-" visibility="PRIVATE"/>
     </entity>
-    <entity entityType="CLASS" id="10232" isAbstract="false" name="Tour" visibility="PUBLIC">
+    <entity entityType="CLASS" id="10232" isAbstract="false" name="turn" visibility="PUBLIC">
       <attribute const="false" defaultValue="" isStatic="true" name="id" type="-" visibility="PRIVATE"/>
       <attribute const="false" defaultValue="" isStatic="false" name="seed" type="-" visibility="PRIVATE"/>
     </entity>
