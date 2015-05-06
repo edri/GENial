@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="jackson-annotations-2.4.0.jar"/>
 	<classpathentry kind="lib" path="jackson-core-2.4.4.jar"/>
 	<classpathentry kind="lib" path="jackson-databind-2.4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jérôme/Documents/GENial/workspace/Protocol/protocol-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

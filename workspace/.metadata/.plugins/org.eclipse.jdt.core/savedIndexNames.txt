@@ -1,6 +1,0 @@
-INDEX VERSION 1.127+C:\Users\David\Documents\HEIG\BA4\GEN\Projet\repo\GENial\workspace\.metadata\.plugins\org.eclipse.jdt.core
-3284140816.index
-362219227.index
-2501520862.index
-137624701.index
-2011346132.index
