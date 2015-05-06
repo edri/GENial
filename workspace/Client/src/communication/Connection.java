@@ -23,9 +23,7 @@ public class Connection implements Runnable{
 	private BufferedReader in;
 	private PrintWriter out;
 
-	private Connection(){
-		msgExtractor = new MessageExtractor();
-	}
+	private Connection(){	}
 
 	public static Connection getInstance(){
 		if (instance == null){
@@ -38,7 +36,6 @@ public class Connection implements Runnable{
 		// connection a un nouveau serveur
 		if (!ip.equals(addrIP)){
 			// ferme l'ancienne connection s'il y en avait une ouverte
-			disconnect();
 			
 			ip = addrIP;
 			// ouvre la nouvelle connection
@@ -66,7 +63,7 @@ public class Connection implements Runnable{
 		int charRead;
 		
 		while(running){
-			
+			msgExtractor = new MessageExtractor();
 			try {
 				// on lit le premier string contenant le type de message
 				typeMsg = in.readLine();
@@ -78,8 +75,7 @@ public class Connection implements Runnable{
 				msgExtractor.process(typeMsg, strJson);
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				disconnect();
 			}
 			
 		}
@@ -99,7 +95,7 @@ public class Connection implements Runnable{
 			socket.close();
 			running = false;
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return socket.isClosed();
 	}
