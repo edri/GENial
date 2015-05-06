@@ -1,0 +1,8 @@
+package messages;
+
+/**
+ * renseigne l'acceptation de la requête precedente
+ */
+public class ACCEPT {
+	// rien....
+}

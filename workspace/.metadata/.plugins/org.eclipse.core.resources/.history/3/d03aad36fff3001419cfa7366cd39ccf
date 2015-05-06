@@ -1,0 +1,8 @@
+package messages;
+
+/**
+ *	Message contenant un entier identifiant le jeu souhaite
+ */
+public class CHOOSE_GAME {
+	
+}

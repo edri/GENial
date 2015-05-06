@@ -1,0 +1,12 @@
+package messages;
+
+
+/**
+ * Permet de demander la creation d'une partie
+ */
+public class CREATE {
+	private String nom; 
+	private int nbJoueurs;
+	private int difficulte;
+	private int nbCases;
+}

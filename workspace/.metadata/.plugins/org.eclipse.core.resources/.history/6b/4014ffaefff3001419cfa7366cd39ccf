@@ -1,0 +1,9 @@
+package messages;
+
+
+/**
+ * Permet de demander la creation d'une partie
+ */
+public class CREATE {
+
+}
