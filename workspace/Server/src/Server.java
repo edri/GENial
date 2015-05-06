@@ -38,11 +38,11 @@ public class Server {
                 shouldRun = true;
                 while (shouldRun) {
                     try {
-                        System.out.println("Listening for client connection on " + serverSocket.getLocalSocketAddress());
+                        System.out.println("Attente de client sur " + serverSocket.getLocalSocketAddress());
                         Socket clientSocket = serverSocket.accept();
-                        System.out.println("New client has arrived ...");
+                        System.out.println("Un nouveau client est arrivé ...");
                         ClientWorker worker = new ClientWorker(clientSocket);
-                        System.out.println("Delegating work to client worker...");
+                        System.out.println("Délegation du travail à un client worker...");
                         Thread clientThread = new Thread(worker);
                         clientThread.start();
                     } catch (IOException ex) {

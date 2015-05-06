@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import protocol.*;
+import messages.*;
 import tools.JsonObjectMapper;
 
 /**
@@ -38,24 +38,38 @@ public class ClientWorker implements Runnable {
 			Logger.getLogger(ClientWorker.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
-		while (true) {
-			try {
-				switch (reader.readLine()) {
+		String command;
+		boolean exit = false;
+		writer.println("ping");
+		writer.println("");
+		try {
+			while (!exit && ((command = reader.readLine()) != null)) {
+				switch (command) {
 					case Protocol.CMD_AUTH:
 						AuthMessage authMsg = JsonObjectMapper.parseJson(reader.readLine(), AuthMessage.class);
 						System.out.println("Login: " + authMsg.getPseudo());
 						System.out.println("Password: " + authMsg.getHashPassword());
+						break;
+					case Protocol.CMD_QUIT:
+						exit = true;
+						break;
+					case Protocol.CMD_CREATE:
+						//CREATE createGame =
 						break;
 					default:
 						System.out.println("Commande non-reconnue.");
 						break;
 
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-
+		} catch (IOException e) {
+			// Un client se déconnecte
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 
