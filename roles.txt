@@ -1,0 +1,27 @@
+Représentants des utilisateurs
+	Miguel
+	
+Chef de projet
+	Miguel
+
+Analyste
+	David => interaction client-serveur
+	James => base de données
+	Jérôme & Miguel => cas d'utilisation
+	Mélanie => modèles de domaine
+	
+
+Architecte, conceptrice en chef
+	Mélanie
+
+Programmeur
+	Tout le monde, pour les mini-jeux
+	David & Jérôme => Plateau
+	James & Miguel => Serveur
+	Mélanie => Base de données
+
+Responsable des tests
+	Mélanie & David
+
+Responsable de la configuration
+	Jérôme
