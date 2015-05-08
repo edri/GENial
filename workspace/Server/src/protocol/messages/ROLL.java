@@ -1,7 +1,5 @@
 package messages;
 
-
-
-public class DICE {
+public class ROLL {
 
 }
