@@ -13,9 +13,9 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import messages.*;
 import tools.JsonObjectMapper;
-
+import messages.*;
+import protocol.*;
 /**
  *
  * @author Jérôme
@@ -46,16 +46,49 @@ public class ClientWorker implements Runnable {
 			while (!exit && ((command = reader.readLine()) != null)) {
 				switch (command) {
 					case Protocol.CMD_AUTH:
-						AuthMessage authMsg = JsonObjectMapper.parseJson(reader.readLine(), AuthMessage.class);
-						System.out.println("Login: " + authMsg.getPseudo());
-						System.out.println("Password: " + authMsg.getHashPassword());
+						AUTH authMsg = JsonObjectMapper.parseJson(reader.readLine(), AUTH.class);
+						
+						if(true) {
+							writer.println(Protocol.CMD_ACCEPT);
+						} else {
+							writer.println(Protocol.CMD_REFUSE);
+						}
+						
 						break;
+						
+					case Protocol.CMD_REGISTER:
+						REGISTER reg = JsonObjectMapper.parseJson(reader.readLine(), REGISTER.class);
+						
+						if(true) {
+							writer.println(Protocol.CMD_ACCEPT);
+						} else {
+							writer.println(Protocol.CMD_REFUSE);
+						}
+						break;
+					
+					case Protocol.CMD_CREATE:
+						CREATE createGame = JsonObjectMapper.parseJson(reader.readLine(), CREATE.class);
+						
+						if(true) {
+							writer.println(Protocol.CMD_ACCEPT);
+						} else {
+							writer.println(Protocol.CMD_REFUSE);
+						}
+						break;
+						
+					case Protocol.CMD_REFRESH:
+						
+						if(true) {
+							writer.println(Protocol.CMD_ACCEPT);
+						} else {
+							writer.println(Protocol.CMD_REFUSE);
+						}
+						break;
+						
 					case Protocol.CMD_QUIT:
 						exit = true;
 						break;
-					case Protocol.CMD_CREATE:
-						//CREATE createGame =
-						break;
+						
 					default:
 						System.out.println("Commande non-reconnue.");
 						break;

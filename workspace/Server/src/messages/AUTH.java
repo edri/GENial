@@ -1,5 +1,8 @@
 package messages;
 
+/**
+ * authentification d'un utilisateur
+ */
 public class AUTH {
 	private String name;
 	private String hashPwd;
