@@ -8,6 +8,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +22,7 @@ public class Server {
     private boolean shouldRun;
     private ServerSocket serverSocket;
     private Thread serverThread;
+    private LinkedList<Game> games = new LinkedList<>();
     
 
     public Server(int port) {
