@@ -1,13 +1,15 @@
 package messages;
 
+import communication.MessageHandler;
+
 
 /**
  * Indique l'arrivee d'un nouveau joueur dans la partie en attente de debuter
  */
-public class NEW_PLAYER {
+public class NewPlayer extends Message {
 	private String newPlayerName;
 	
-	public NEW_PLAYER(String name){
+	public NewPlayer(String name){
 		newPlayerName = name;
 	}
 
@@ -17,5 +19,10 @@ public class NEW_PLAYER {
 
 	public void setNewPlayerName(String newPlayerName) {
 		this.newPlayerName = newPlayerName;
+	}
+	
+	@Override
+	public void accept(MessageHandler visitor) {
+		visitor.visit(this);
 	}
 }

@@ -1,12 +1,14 @@
 package messages;
 
+import communication.MessageHandler;
+
 /**
  *	Message contenant un entier identifiant le jeu souhaite
  */
-public class CHOOSE_GAME {
+public class ChooseGame extends Message {
 	private int gameId;
 	
-	public CHOOSE_GAME(int i){
+	public ChooseGame(int i){
 		gameId = i;
 	}
 	
@@ -16,5 +18,10 @@ public class CHOOSE_GAME {
 	
 	public int getGameId(){
 		return gameId;
+	}
+	
+	@Override
+	public void accept(MessageHandler visitor) {
+		visitor.visit(this);
 	}
 }

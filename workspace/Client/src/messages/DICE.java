@@ -1,13 +1,15 @@
 package messages;
 
+import communication.MessageHandler;
+
 /**
  * Indique aux joueurs qui doit lancer son des
  */
 
-public class DICE {
+public class Dice extends Message {
 	private String playerName;
 	
-	public DICE(String name){
+	public Dice(String name){
 		playerName = name;
 	}
 
@@ -17,5 +19,10 @@ public class DICE {
 
 	public void setPlayerName(String playerName) {
 		this.playerName = playerName;
+	}
+	
+	@Override
+	public void accept(MessageHandler visitor) {
+		visitor.visit(this);
 	}
 }

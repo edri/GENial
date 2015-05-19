@@ -1,12 +1,12 @@
 package main;
 
-import communication.Connection;
+import application.App;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Connection connection = Connection.getInstance();
-		connection.connect("10.192.91.41");
+		Thread mainThread = new Thread(new App());
+		mainThread.start();
 	}
 
 }
