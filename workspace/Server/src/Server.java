@@ -8,8 +8,12 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import database.Database;
 
 /**
  *
@@ -21,6 +25,7 @@ public class Server {
     private boolean shouldRun;
     private ServerSocket serverSocket;
     private Thread serverThread;
+    private LinkedList<Game> games = new LinkedList<>();
     
 
     public Server(int port) {
@@ -61,6 +66,11 @@ public class Server {
     }
     
     public static void main(String[] args) {
+    	try {
+    		System.out.println(Database.getInstance().createPlayer("James", "asdékj3"));
+    	} catch (SQLException e) {
+    		System.out.println(e);
+    	}
         final int PORT = 7777;
         Server server = new Server(PORT); 
     }
