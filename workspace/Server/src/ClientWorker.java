@@ -56,10 +56,9 @@ public class ClientWorker implements Runnable {
 
 		String command;
 		boolean exit = false;
-		writer.println("ping");
-		writer.println("");
 		try {
 			while (!exit && ((command = reader.readLine()) != null)) {
+				System.out.println("Serveur a reçu la commande : " + command);
 				switch (command) {
 					case Protocol.CMD_AUTH:
 						Auth authMsg = JsonObjectMapper.parseJson(reader.readLine(), Auth.class);
@@ -77,7 +76,11 @@ public class ClientWorker implements Runnable {
 						break;
 						
 					case Protocol.CMD_REGISTER:
-						Register reg = JsonObjectMapper.parseJson(reader.readLine(), Register.class);
+						System.out.println("Debut de register");
+						String line = reader.readLine();
+						System.out.println("Recu le json : "  + line);
+						Register reg = JsonObjectMapper.parseJson(line, Register.class);
+						System.out.println("Fin de register : " + reg.getName() + ", " + reg.getPwd());
 						
 						if(db.playerAlreadyExist(reg.getName(), reg.getPwd())) {
 							writer.println(Protocol.CMD_REFUSE);
@@ -120,6 +123,7 @@ public class ClientWorker implements Runnable {
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			// Un client se déconnecte
 			try {
 				socket.close();
