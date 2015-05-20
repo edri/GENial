@@ -9,6 +9,10 @@ import communication.MessageHandler;
 public class Join extends Message {
 	private String gameName;
 	
+	public Join(){
+		gameName = "";
+	}
+	
 	public Join(String name){
 		gameName = name;
 	}

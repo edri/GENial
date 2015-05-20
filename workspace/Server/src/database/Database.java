@@ -1,11 +1,18 @@
 package database;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import application.*;
 
 /**
  * Classe représentant la base de données. Elle propose diverses
@@ -90,10 +97,10 @@ public class Database {
 		return false;
 	}
 	
-	public int createGame(String playerName, int nbPlayer, int difficulty, int nbSquare) {
+	public int createGame(int playerId, int nbPlayer, int difficulty, int nbSquare) {
 		try {
 			PreparedStatement sql = conn.prepareStatement("INSERT INTO game(creator, difficulty, squares) VALUES(?, ?, ?)");
-			sql.setString(1, playerName);
+			sql.setInt(1, playerId);
 			sql.setInt(2, difficulty);
 			sql.setInt(3, nbSquare);
 			return sql.executeUpdate();
@@ -101,5 +108,23 @@ public class Database {
 			e.printStackTrace();
 		}
 		return -1;
+	}
+	
+	public List<Game> fetchGamesList() {
+		try {
+			PreparedStatement sql = conn.prepareStatement("SELECT id, creator, difficulty, squares FROM game;");
+			ResultSet rs = sql.executeQuery();
+			List<Game> list = new ArrayList<>();
+			while(rs.next()) {
+				PreparedStatement ssql = conn.prepareStatement("SELECT player FROM player_game WHERE game = ?;");
+				ssql.setInt(1, rs.getInt(1));
+				ResultSet srs = ssql.executeQuery();
+				
+				list.add(new Game(rs.getInt(4), rs.getInt(2), players));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

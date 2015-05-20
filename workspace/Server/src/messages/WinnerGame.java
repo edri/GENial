@@ -9,6 +9,11 @@ public class WinnerGame extends Message {
 	private String playerName;
 	private int score;
 	
+	public WinnerGame(){
+		playerName = "";
+		score = 0;
+	}
+	
 	public WinnerGame(String name, int score){
 		playerName = name;
 		this.score = score;

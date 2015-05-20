@@ -9,6 +9,10 @@ import communication.MessageHandler;
 public class Mvt extends Message {
 	private int squareToMove;
 	
+	public Mvt(){
+		squareToMove = 0;
+	}
+	
 	public Mvt(int nbSquare){
 		squareToMove = nbSquare;
 	}

@@ -9,6 +9,10 @@ import communication.MessageHandler;
 public class Dice extends Message {
 	private String playerName;
 	
+	public Dice(){
+		playerName = "";
+	}
+	
 	public Dice(String name){
 		playerName = name;
 	}
