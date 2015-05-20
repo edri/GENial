@@ -1,5 +1,6 @@
 package main;
 
+import application.App;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -12,9 +13,11 @@ import communication.Connection;
 public class Main {
 
 	public static void main(String[] args) {
-		/*Connection connection = Connection.getInstance();
-		connection.connect("10.192.91.41");*/
+		Thread mainThread = new Thread(new App());
+		mainThread.start();
 		
+		
+		/* truc de Miguel
 		boolean gameFinished = false;
 		Random rand = new Random();
 		ArrayList<String> players = new ArrayList<String>();
@@ -42,6 +45,6 @@ public class Main {
 		
 		System.out.println();
 		System.out.println(game.getWinner() + " a gagné la partie !");
+		*/
 	}
-
 }

@@ -11,13 +11,10 @@ import java.net.UnknownHostException;
 import settings.*;
 
 // singleton, facilite d'acces et une seule connection par client
-public class Connection implements Runnable{
+public class Connection {
 	private static Connection instance;
 	private Socket socket;
-	private boolean running = false;
 	private String ip = "";
-	private MessageExtractor msgExtractor;
-	//private Semaphore writing;
 
 	// echange de strings -> reader/writer
 	private BufferedReader in;
@@ -35,56 +32,39 @@ public class Connection implements Runnable{
 	public boolean connect(String addrIP){
 		// connection a un nouveau serveur
 		if (!ip.equals(addrIP)){
-			// ferme l'ancienne connection s'il y en avait une ouverte
+			// ferme l'ancienne connexion si existante
+			if (!ip.equals("")){
+				disconnect();
+			}
 			
-			ip = addrIP;
 			// ouvre la nouvelle connection
+			ip = addrIP;
 			try {
 				socket = new Socket(ip, Settings.serverPort);
 
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Settings.encoding));
 				out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Settings.encoding));
-				// se met en attente de nouveau message
-				running = true;
-				new Thread(this).start();
-
 			} catch (UnknownHostException e) {
-				e.printStackTrace();
+				System.out.println("Adresse IP inconnue!");
+				//e.printStackTrace();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Impossible de se connecter au serveur!");
+				//e.printStackTrace();
 			}
 		}
-		return !socket.isClosed();
+		return socket == null ? false : !socket.isClosed();
 	}
-
-	public void run(){
-		String typeMsg;
-		String strJson;
-		int charRead;
-		
-		while(running){
-			msgExtractor = new MessageExtractor();
-			try {
-				// on lit le premier string contenant le type de message
-				typeMsg = in.readLine();
-				
-				// on lit le second string contenant le  json
-				strJson = in.readLine();
-				
-				// on extrait les informations du json et on envoie la reponse adequate
-				msgExtractor.process(typeMsg, strJson);
-				
-			} catch (IOException e) {
-				disconnect();
-			}
-			
-		}
-	}
-
+	
 	public synchronized void sendMsg(String ident, String msgJson){
 		out.write(ident);
 		out.println();
 		out.write(msgJson);
+		out.println();
+		out.flush();
+	}
+	
+	public synchronized void sendMsg(String ident){
+		out.write(ident);
 		out.println();
 		out.flush();
 	}
@@ -93,11 +73,19 @@ public class Connection implements Runnable{
 		// essaie de fermer la connection
 		try {
 			socket.close();
-			running = false;
 		} catch (IOException e) {
+			System.out.println("Deconnecte du serveur...");
 			//e.printStackTrace();
 		}
-		return socket.isClosed();
+		return socket == null ? true : !socket.isClosed();
+	}
+	
+	public BufferedReader getInputStream(){
+		return in;
+	}
+	
+	public PrintWriter getOutputStream(){
+		return out;
 	}
 
 }
