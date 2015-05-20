@@ -7,6 +7,10 @@ public class REGISTER {
 	private String name;
 	private String pwd;
 	
+	public REGISTER() {
+		name = "";
+		pwd = "";
+	}
 	public REGISTER(String name, String pwd){
 		this.name = name;
 		this.pwd = pwd;

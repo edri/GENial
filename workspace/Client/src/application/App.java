@@ -43,11 +43,14 @@ public class App implements Runnable{
 		connection = Connection.getInstance();
 		// connection au serveur
 		if (connection.connect(addrIP)){
+			msgReader.setStream(Connection.getInstance().getInputStream());
+			
 			// utilisateur doit s'identifier ou creer un nouveau compte
 			choix = -1;
 			while(choix < 0 || choix > 1){
 				System.out.println("Voulez-vous creer un nouveau compte [0] ou vous identifier [1]?");
 				choix = scan.nextInt();
+				scan.nextLine();
 			}
 
 			success = false;
@@ -86,6 +89,7 @@ public class App implements Runnable{
 				System.out.println("Voulez-vous creer une partie [0] ou en rejoindre une [1] ?");
 				choix = scan.nextInt();
 			}
+			scan.nextLine();
 
 			String gameName;
 			success = false;

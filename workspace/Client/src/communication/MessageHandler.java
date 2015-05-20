@@ -1,5 +1,7 @@
 package communication;
 
+import java.io.IOException;
+
 import messages.*;
 import application.App;
 
@@ -21,9 +23,16 @@ public class MessageHandler implements MessageVisitor{
 	@Override
 	public void visit(Auth auth) {
 		// on serialise le message en Json
-		String msgToJson = "";
-		// on envoie le message
-		connection.sendMsg(Protocol.CMD_AUTH, msgToJson);
+		String msgToJson;
+		try {
+			msgToJson = JsonObjectMapper.toJson(auth);
+			
+			// on envoie le message
+			connection.sendMsg(Protocol.CMD_AUTH, msgToJson);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -99,10 +108,19 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(Register register) {
-		// on serialise la reponse
-		String msgToJson = "";
-		// on l'envoie
-		connection.sendMsg(Protocol.CMD_REGISTER, msgToJson);
+		
+		// on serialise le message en Json
+		String msgToJson;
+		try {
+			msgToJson = JsonObjectMapper.toJson(register);
+			System.out.println(msgToJson);
+			
+			// on envoie le message
+			connection.sendMsg(Protocol.CMD_REGISTER, msgToJson);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

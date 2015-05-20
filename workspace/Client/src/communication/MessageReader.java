@@ -3,7 +3,7 @@ package communication;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import application.App;
+import application.*;
 import messages.*;
 
 public class MessageReader {
@@ -11,7 +11,6 @@ public class MessageReader {
 	private App application;
 	
 	public MessageReader(App app){
-		this.in = Connection.getInstance().getInputStream();
 		application = app;
 	}
 	
@@ -20,6 +19,7 @@ public class MessageReader {
 		String msgJson;
 		try {
 			String ident = in.readLine();
+			System.out.println("Le client a reçu la commande : " + ident);
 			switch(ident){
 				case Protocol.CMD_ACCEPT:
 					application.setSuccess(true);
@@ -30,8 +30,14 @@ public class MessageReader {
 				case Protocol.CMD_GAMES_LIST:
 					// deserialise le message
 					msgJson = in.readLine();
-					GamesList games = null;
-					
+					GamesList games = JsonObjectMapper.parseJson(msgJson, GamesList.class);
+					if (!games.getGames().isEmpty()) {
+						for (Game g : games.getGames()) {
+							System.out.print("Partie de " + g.getName() + ", " + g.getPlayers().size() + "/" + g.getMaxPlayers() + ", taille du plateau : " + g.getNbCases() + ", difficulté : " + g.getDifficulty());
+						}
+					} else {
+						System.out.println("Aucune partie existante");
+					}
 					// on met a jour la liste des jeux
 					application.updateGames(games.getGames());
 				default:
