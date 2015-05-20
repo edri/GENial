@@ -49,8 +49,16 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(Create create) {
-		// TODO Auto-generated method stub
-		
+		String msgToJson;
+		try {
+			msgToJson = JsonObjectMapper.toJson(create);
+			
+			// on envoie le message
+			connection.sendMsg(Protocol.CMD_CREATE, msgToJson);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -125,13 +133,12 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(Roll roll) {
-		// TODO Auto-generated method stub
-		
+		connection.sendMsg(Protocol.CMD_ROLL);
 	}
 
 	@Override
 	public void visit(SelectGame selectGame) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
@@ -143,25 +150,24 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(StartGame startGame) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
 	@Override
 	public void visit(Start start) {
-		// TODO Auto-generated method stub
-		
+		connection.sendMsg(Protocol.CMD_START);
 	}
 
 	@Override
 	public void visit(WinnerGame winnerGame) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
 	@Override
 	public void visit(Winner winner) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 }

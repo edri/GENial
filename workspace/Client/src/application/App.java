@@ -15,24 +15,25 @@ public class App implements Runnable{
 	private boolean success;
 	private MessageHandler msgHandler;
 	private MessageReader msgReader;
-	
+	private String clientName;
+
 	public App(){
 		start = false;
 		endGame = false;
 		currentGame = null;
+		clientName = "";
 		games = new ArrayList<Game>();
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
 	}
-	
+
 	@Override
 	public void run() {
 		int choix;
-		String name;
 		String pwd;
 		String addrIP;
 		Connection connection;
-		
+
 		Scanner scan = new Scanner(System.in);
 
 		System.out.println("Bonjour, bienvenue sur cette super application!");
@@ -44,7 +45,7 @@ public class App implements Runnable{
 		// connection au serveur
 		if (connection.connect(addrIP)){
 			msgReader.setStream(Connection.getInstance().getInputStream());
-			
+
 			// utilisateur doit s'identifier ou creer un nouveau compte
 			choix = -1;
 			while(choix < 0 || choix > 1){
@@ -58,9 +59,9 @@ public class App implements Runnable{
 			if (choix == 0){
 				System.out.println("Vous avez decide de creer un nouveau compte.");
 				while(!success){
-					name = askString("Veuillez entrer votre nom", scan);
+					clientName = askString("Veuillez entrer votre nom", scan);
 					pwd = askString("Veuillez entrer votre mot de passe", scan);//TODO password en dur...
-					register(name,pwd);
+					register(clientName,pwd);
 					if (!success){
 						System.out.println("Nom d'utilisateur ou mdp incorrecte.");
 					}
@@ -70,58 +71,75 @@ public class App implements Runnable{
 			else{
 				System.out.println("Vous avez decide de vous identifier aupres du serveur.");
 				while(!success){
-					name = askString("Veuillez entrer votre nom", scan);
+					clientName = askString("Veuillez entrer votre nom", scan);
 					pwd = askString("Veuillez entrer votre mot de passe", scan);
-					auth(name,pwd);
+					auth(clientName,pwd);
 					if (!success){
 						System.out.println("Nom deja utilise ou format incorrecte");
 					}
 				}
 			}
 
-			// utilisateur identifie, acces au salon
+			// utilisateur est maintenant identifie
+			// recuperation de la liste des parties
+			msgReader.getMessage();
 
-			// le serveur envoi la liste des parties cree (action dans MessageReader)
-
-			// 2 choix, soit on rejoins une nouvelle partie, soit on en rejoins une
-			choix = -1;
-			while(choix < 0 || choix > 1){
-				System.out.println("Voulez-vous creer une partie [0] ou en rejoindre une [1] ?");
-				choix = scan.nextInt();
-			}
-			scan.nextLine();
-
-			String gameName;
-			success = false;
-			// on rejoins une partie
-			if (choix == 1){
-				System.out.println("Vous avez decide de rejoindre une partie.");
-				while(!success){
-					gameName = askString("Veuillez entrer le nom de la partie : ", scan);
-					success = joinAGame(gameName);
+			// JOIN or CREATE
+			boolean firstTurn = true;
+			while(!success){
+				if (!firstTurn){
+					refreshGamesList();
+				} else {
+					firstTurn = false;
 				}
-			} // on cree une partie 
-			else{
-				System.out.println("Vous avez decide de creer une partie.");
-				while(!success){
+				
+				// 2 choix, soit on rejoins une nouvelle partie, soit on en rejoins une
+				choix = -1;
+				while(choix < 0 || choix > 1){
+					System.out.println("Voulez-vous creer une partie [0] ou en rejoindre une [1] ?");
+					choix = scan.nextInt();
+				}
+				scan.nextLine();
+
+				String gameName;
+				success = false;
+				// JOIN
+				if (choix == 1){
+					System.out.println("Vous avez decide de rejoindre une partie.");
 					gameName = askString("Veuillez entrer le nom de la partie : ", scan);
+					joinAGame(gameName);
+					
+					if (success){ // on a reussi a rejoindre la partie
+						System.out.println("Veuillez attendre que la partie debute.");
+					}
+				} // CREATE 
+				else{
+					System.out.println("Vous avez decide de creer une partie.");
+					// demande au serveur de creer une partie
 					int difficulty = 1;
 					int nbPlayers = 4;
 					int nbSquare = 14;
-					createAGame(gameName, difficulty, nbPlayers, nbSquare);
-				}
-				// on debute la partie
-				String command;
-				while(!start){
-					command = askString("Ecrivez 'start' pour debuter la partie : ",scan);
-					start = command.equals("start");
+					createAGame(clientName, difficulty, nbPlayers, nbSquare);
+
+					// traitement de la reponse
+					if (success){ // partie cree
+						ArrayList<String> players = new ArrayList<String>();
+						players.add(clientName);
+
+						currentGame = new Game(nbSquare, difficulty, players, clientName, nbPlayers);
+						// on debute la partie quand le joueur le decide
+						String command;
+						while(!start){
+							command = askString("Ecrivez 'start' pour debuter la partie : ",scan);
+							start = command.equals("start");
+						}
+						startGame();
+					}
 				}
 			}
-			
-			// attente active sur le lancement de la partie
-			System.out.println("Veuillez attendre que la partie debute.");
-			while(!start){ }
-			
+
+			// la partie a (ou va) debuter, le serveur gere l'execution des tours
+			// le client ne fait que reagir aux messages recus jusqu'a la fin du jeu
 			while(!endGame){
 				msgReader.getMessage();
 			}
@@ -134,15 +152,29 @@ public class App implements Runnable{
 	}
 
 	private void startGame(){
-
+		// on envoie le message
+		Start startMsg = new Start();
+		startMsg.accept(msgHandler);
+		// on recupere la reponse
+		msgReader.getMessage();
 	}
 
-	private boolean createAGame(String gameName, int diff, int nbPlayers, int nbSquare){
-		return false;
+	private void createAGame(String gameName, int diff, int nbPlayers, int nbSquare){
+		// envoi du message
+		Create createMsg = new Create(gameName, nbPlayers, diff, nbSquare);
+		createMsg.accept(msgHandler);
+
+		// recuperation de la reponse
+		success = false;
+		msgReader.getMessage();
 	}
 
-	private boolean joinAGame(String gameName){
-		return false;
+	private void joinAGame(String gameName){
+		// envoi du message
+		Join joinMsg = new Join(gameName);
+		joinMsg.accept(msgHandler);
+		// recuperation de la reponse
+		msgReader.getMessage();
 	}
 
 	private void refreshGamesList(){
@@ -165,7 +197,7 @@ public class App implements Runnable{
 		// envoi du message
 		Register registerMsg = new Register(name, pwd);
 		registerMsg.accept(msgHandler);
-		
+
 		// recupereation de la reponse
 		msgReader.getMessage();
 	}
@@ -177,11 +209,38 @@ public class App implements Runnable{
 		return temp;
 	}
 	
+	public void setEndGame(boolean b){
+		endGame = b;
+	}
+	
 	public void setSuccess(boolean b){
 		success = b;
 	}
-	
+
 	public void updateGames(List<Game> games){
 		this.games = games;
+	}
+
+	public void addPlayerToGame(String name) {
+		currentGame.addPlayer(name);
+	}
+
+	public void removePlayerFromGame(String name) {
+		currentGame.removePlayer(name);
+	}
+
+	public void roll(String name) {
+		System.out.println("C'est a " + name + "de lancer les des !");
+		currentGame.setPlayerTurn(name);
+		
+		if (name.equals(clientName)){ // roll si c'est le tour du joueur
+			Roll roll = new Roll();
+			roll.accept(msgHandler);
+		}
+	}
+
+	public void movePlayer(int value) {
+		System.out.println("Le joueur avance de " + value + " cases.");
+		currentGame.movePlayer(value);
 	}
 }

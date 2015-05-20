@@ -11,6 +11,13 @@ public class Create extends Message{
 	private int difficulty;
 	private int nbCases;
 	
+	public Create(){
+		name = "";
+		nbPlayers = 0;
+		difficulty = 0;
+		nbCases = 0;
+	}
+	
 	public Create(String name, int players, int difficulty, int cases){
 		this.name = name;
 		nbPlayers = players;
