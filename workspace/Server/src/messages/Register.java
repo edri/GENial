@@ -9,6 +9,11 @@ public class Register extends Message {
 	private String name;
 	private String pwd;
 	
+	public Register(){
+		name = "";
+		pwd = "";
+	}
+	
 	public Register(String name, String pwd){
 		this.name = name;
 		this.pwd = pwd;

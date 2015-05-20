@@ -8,6 +8,10 @@ import communication.MessageHandler;
 public class Winner extends Message {
 	private String winnerName;
 	
+	public Winner(){
+		winnerName = "";
+	}
+	
 	public Winner(String name){
 		winnerName = name;
 	}

@@ -98,18 +98,14 @@ public class ClientWorker implements Runnable {
 							writer.println(Protocol.CMD_REFUSE);
 							writer.println(JsonObjectMapper.toJson(new Refuse("Un jeu a deja ete cree.")));
 						} else {
-							db.createGame(createGame.getName(), createGame.getNbPlayers(), createGame.getDifficulty(), createGame.getNbCases());
+							db.createGame(playerId, createGame.getNbPlayers(), createGame.getDifficulty(), createGame.getNbCases());
 						}
 						
 						break;
 						
 					case Protocol.CMD_REFRESH:
 						
-						if(true) {
-							writer.println(Protocol.CMD_ACCEPT);
-						} else {
-							writer.println(Protocol.CMD_REFUSE);
-						}
+						writer.println(Protocol.CMD_GAMES_LIST);
 						break;
 						
 					case Protocol.CMD_QUIT:

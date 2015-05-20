@@ -9,6 +9,10 @@ import communication.MessageHandler;
 public class NewPlayer extends Message {
 	private String newPlayerName;
 	
+	public NewPlayer(){
+		newPlayerName = "";
+	}
+	
 	public NewPlayer(String name){
 		newPlayerName = name;
 	}

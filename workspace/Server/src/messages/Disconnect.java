@@ -8,6 +8,10 @@ import communication.MessageHandler;
 public class Disconnect extends Message {
 	private String leaverName;
 	
+	public Disconnect(){
+		leaverName = "";
+	}
+	
 	public Disconnect(String name){
 		leaverName = name;
 	}

@@ -3,7 +3,7 @@ package messages;
 import communication.MessageHandler;
 
 /**
- * renseigne l'acceptation de la requête recue
+ * renseigne l'acceptation de la requÃªte recue
  */
 public class Accept extends Message {
 
