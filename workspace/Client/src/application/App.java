@@ -56,7 +56,7 @@ public class App implements Runnable{
 				System.out.println("Vous avez decide de creer un nouveau compte.");
 				while(!success){
 					name = askString("Veuillez entrer votre nom", scan);
-					pwd = askString("Veuillez entrer votre mot de passe", scan);
+					pwd = askString("Veuillez entrer votre mot de passe", scan);//TODO password en dur...
 					register(name,pwd);
 					if (!success){
 						System.out.println("Nom d'utilisateur ou mdp incorrecte.");
@@ -104,7 +104,7 @@ public class App implements Runnable{
 					int difficulty = 1;
 					int nbPlayers = 4;
 					int nbSquare = 14;
-					success = createAGame(gameName, difficulty, nbPlayers, nbSquare);
+					createAGame(gameName, difficulty, nbPlayers, nbSquare);
 				}
 				// on debute la partie
 				String command;
