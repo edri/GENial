@@ -14,7 +14,7 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(Accept accept) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
@@ -28,7 +28,7 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(Begin begin) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
@@ -46,19 +46,19 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(Dice dice) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
 	@Override
 	public void visit(Disconnect disconnect) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
 	@Override
 	public void visit(GamesList gamesList) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
@@ -70,13 +70,13 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(Mvt mvt) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
 	@Override
 	public void visit(NewPlayer newPlayer) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
@@ -88,20 +88,21 @@ public class MessageHandler implements MessageVisitor{
 
 	@Override
 	public void visit(Refresh refresh) {
-		// TODO Auto-generated method stub
-		
+		connection.sendMsg(Protocol.CMD_REFRESH);
 	}
 
 	@Override
 	public void visit(Refuse refuse) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub, server use only
 		
 	}
 
 	@Override
 	public void visit(Register register) {
-		// TODO Auto-generated method stub
-		
+		// on serialise la reponse
+		String msgToJson = "";
+		// on l'envoie
+		connection.sendMsg(Protocol.CMD_REGISTER, msgToJson);
 	}
 
 	@Override

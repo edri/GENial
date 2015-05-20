@@ -62,6 +62,12 @@ public class Connection {
 		out.println();
 		out.flush();
 	}
+	
+	public synchronized void sendMsg(String ident){
+		out.write(ident);
+		out.println();
+		out.flush();
+	}
 
 	public boolean disconnect(){
 		// essaie de fermer la connection

@@ -18,6 +18,7 @@ public abstract class Protocol {
 	public final static String CMD_BEGIN = "BEGIN";
 	public final static String CMD_DICE = "DICE";
 	public final static String CMD_MVT = "CMD_MVT";
+	public final static String CMD_GAMES_LIST = "GAMES_LIST";
 	public final static String CMD_SELECT_GAME = "SELECT_GAME";
 	public final static String CMD_START_GAME = "START_GAME";
 	public final static String CMD_WINNER_GAME = "WINNER_GAME";

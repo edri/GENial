@@ -11,15 +11,18 @@ public class App implements Runnable{
 	private Game currentGame;
 	private List<Game> games;
 	private boolean start;
+	private boolean endGame;
+	private boolean success;
 	private MessageHandler msgHandler;
 	private MessageReader msgReader;
 	
 	public App(){
 		start = false;
+		endGame = false;
 		currentGame = null;
 		games = new ArrayList<Game>();
 		msgHandler = new MessageHandler(this);
-		msgReader = new MessageReader();
+		msgReader = new MessageReader(this);
 	}
 	
 	@Override
@@ -47,14 +50,14 @@ public class App implements Runnable{
 				choix = scan.nextInt();
 			}
 
-			boolean success = false;
+			success = false;
 			// REGISTER
 			if (choix == 0){
 				System.out.println("Vous avez decide de creer un nouveau compte.");
 				while(!success){
 					name = askString("Veuillez entrer votre nom", scan);
 					pwd = askString("Veuillez entrer votre mot de passe", scan);
-					success = register(name,pwd);
+					register(name,pwd);
 					if (!success){
 						System.out.println("Nom d'utilisateur ou mdp incorrecte.");
 					}
@@ -66,7 +69,7 @@ public class App implements Runnable{
 				while(!success){
 					name = askString("Veuillez entrer votre nom", scan);
 					pwd = askString("Veuillez entrer votre mot de passe", scan);
-					success = auth(name,pwd);
+					auth(name,pwd);
 					if (!success){
 						System.out.println("Nom deja utilise ou format incorrecte");
 					}
@@ -108,15 +111,16 @@ public class App implements Runnable{
 				while(!start){
 					command = askString("Ecrivez 'start' pour debuter la partie : ",scan);
 					start = command.equals("start");
-					startGame();
 				}
 			}
 			
 			// attente active sur le lancement de la partie
 			System.out.println("Veuillez attendre que la partie debute.");
 			while(!start){ }
-
-			//TODO la partie a commencee... creation du plateau etc..
+			
+			while(!endGame){
+				msgReader.getMessage();
+			}
 
 		} // pas connecte !
 		else {
@@ -137,29 +141,29 @@ public class App implements Runnable{
 		return false;
 	}
 
-	private void requestGamesList(){
-		
+	private void refreshGamesList(){
+		// envoi du message
+		Refresh refreshMsg = new Refresh();
+		refreshMsg.accept(msgHandler);
+		// recuperation de la reponse
+		msgReader.getMessage();
 	}
 
-	private boolean auth(String name, String pwd){
+	private void auth(String name, String pwd){
 		// envoi du message
 		Auth authMsg = new Auth(name, pwd);
 		authMsg.accept(msgHandler);
 		// recuperation de la reponse
-		Message response = msgReader.getMessage();
-		if (response instanceof Accept){
-			return true;
-		} else if (response instanceof Refuse){
-			return false;
-		} else {
-			// on devrait ajouter a une liste de message non-traite. 
-			//A voir si cela peut arriver
-			return false;
-		}
+		msgReader.getMessage();
 	}
 
-	private boolean register(String name, String pwd){
-		return false;
+	private void register(String name, String pwd){
+		// envoi du message
+		Register registerMsg = new Register(name, pwd);
+		registerMsg.accept(msgHandler);
+		
+		// recupereation de la reponse
+		msgReader.getMessage();
 	}
 
 	private String askString(String msg, Scanner scan){
@@ -167,5 +171,13 @@ public class App implements Runnable{
 		System.out.println(msg);
 		temp = scan.nextLine();
 		return temp;
+	}
+	
+	public void setSuccess(boolean b){
+		success = b;
+	}
+	
+	public void updateGames(List<Game> games){
+		this.games = games;
 	}
 }
