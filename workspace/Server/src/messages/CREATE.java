@@ -1,16 +1,18 @@
 package messages;
 
+import communication.MessageHandler;
+
 
 /**
  * Permet de demander la creation d'une partie ayant les parametres demande
  */
-public class CREATE {
+public class Create extends Message{
 	private String name;
 	private int nbPlayers;
 	private int difficulty;
 	private int nbCases;
 	
-	public CREATE(String name, int players, int difficulty, int cases){
+	public Create(String name, int players, int difficulty, int cases){
 		this.name = name;
 		nbPlayers = players;
 		this.difficulty = difficulty;
@@ -48,5 +50,10 @@ public class CREATE {
 	
 	public void setNbCases(int nbCases) {
 		this.nbCases = nbCases;
+	}
+	
+	@Override
+	public void accept(MessageHandler visitor) {
+		visitor.visit(this);
 	}
 }

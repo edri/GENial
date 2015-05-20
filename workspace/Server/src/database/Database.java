@@ -3,6 +3,7 @@ package database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -51,5 +52,54 @@ public class Database {
 			System.err.println(e);
 		}
 		return 1;
+	}
+	
+	public ResultSet auth(String username, String hashPass) {
+		try {
+			PreparedStatement sql = conn.prepareStatement("SELECT id, username FROM player WHERE username = ? AND password = ?;");
+			sql.setString(1, username);
+			sql.setString(2, hashPass);
+			return sql.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public boolean playerAlreadyExist(String username, String hashPass) {
+		try {
+			return auth(username, hashPass).first();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean gameAlreadyExist() {
+		try {
+			PreparedStatement sql = conn.prepareStatement("SELECT * FROM game;");
+			if(sql.executeQuery().first()) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public int createGame(String playerName, int nbPlayer, int difficulty, int nbSquare) {
+		try {
+			PreparedStatement sql = conn.prepareStatement("INSERT INTO game(creator, difficulty, squares) VALUES(?, ?, ?)");
+			sql.setString(1, playerName);
+			sql.setInt(2, difficulty);
+			sql.setInt(3, nbSquare);
+			return sql.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 }

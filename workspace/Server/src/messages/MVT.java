@@ -1,13 +1,15 @@
 package messages;
 
+import communication.MessageHandler;
+
 
 /**
  * Indique le nombre de cases que le joueur doit parcourir
  */
-public class MVT {
+public class Mvt extends Message {
 	private int squareToMove;
 	
-	public MVT(int nbSquare){
+	public Mvt(int nbSquare){
 		squareToMove = nbSquare;
 	}
 
@@ -17,5 +19,10 @@ public class MVT {
 
 	public void setSquareToMove(int squareToMove) {
 		this.squareToMove = squareToMove;
+	}
+	
+	@Override
+	public void accept(MessageHandler visitor) {
+		visitor.visit(this);
 	}
 }
