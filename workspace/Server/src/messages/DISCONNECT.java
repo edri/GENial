@@ -1,12 +1,14 @@
 package messages;
 
+import communication.MessageHandler;
+
 /**
  * Indique la deconnexion d'un joueur de la partie
  */
-public class DISCONNECT {
+public class Disconnect extends Message {
 	private String leaverName;
 	
-	public DISCONNECT(String name){
+	public Disconnect(String name){
 		leaverName = name;
 	}
 
@@ -16,5 +18,10 @@ public class DISCONNECT {
 
 	public void setLeaverName(String leaverName) {
 		this.leaverName = leaverName;
+	}
+	
+	@Override
+	public void accept(MessageHandler visitor) {
+		visitor.visit(this);
 	}
 }
