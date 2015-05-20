@@ -1,7 +1,9 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import messages.*;
@@ -10,6 +12,7 @@ import communication.*;
 public class App implements Runnable{
 	private Game currentGame;
 	private List<Game> games;
+	private Scanner scan;
 	private boolean start;
 	private boolean endGame;
 	private boolean success;
@@ -25,6 +28,7 @@ public class App implements Runnable{
 		games = new ArrayList<Game>();
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
+		scan = new Scanner(System.in);
 	}
 
 	@Override
@@ -33,8 +37,6 @@ public class App implements Runnable{
 		String pwd;
 		String addrIP;
 		Connection connection;
-
-		Scanner scan = new Scanner(System.in);
 
 		System.out.println("Bonjour, bienvenue sur cette super application!");
 
@@ -59,8 +61,8 @@ public class App implements Runnable{
 			if (choix == 0){
 				System.out.println("Vous avez decide de creer un nouveau compte.");
 				while(!success){
-					clientName = askString("Veuillez entrer votre nom", scan);
-					pwd = askString("Veuillez entrer votre mot de passe", scan);//TODO password en dur...
+					clientName = askString("Veuillez entrer votre nom");
+					pwd = askString("Veuillez entrer votre mot de passe");//TODO password en dur...
 					register(clientName,pwd);
 					if (!success){
 						System.out.println("Nom d'utilisateur ou mdp incorrecte.");
@@ -71,8 +73,8 @@ public class App implements Runnable{
 			else{
 				System.out.println("Vous avez decide de vous identifier aupres du serveur.");
 				while(!success){
-					clientName = askString("Veuillez entrer votre nom", scan);
-					pwd = askString("Veuillez entrer votre mot de passe", scan);
+					clientName = askString("Veuillez entrer votre nom");
+					pwd = askString("Veuillez entrer votre mot de passe");
 					auth(clientName,pwd);
 					if (!success){
 						System.out.println("Nom deja utilise ou format incorrecte");
@@ -106,7 +108,7 @@ public class App implements Runnable{
 				// JOIN
 				if (choix == 1){
 					System.out.println("Vous avez decide de rejoindre une partie.");
-					gameName = askString("Veuillez entrer le nom de la partie : ", scan);
+					gameName = askString("Veuillez entrer le nom de la partie : ");
 					joinAGame(gameName);
 					
 					if (success){ // on a reussi a rejoindre la partie
@@ -130,7 +132,7 @@ public class App implements Runnable{
 						// on debute la partie quand le joueur le decide
 						String command;
 						while(!start){
-							command = askString("Ecrivez 'start' pour debuter la partie : ",scan);
+							command = askString("Ecrivez 'start' pour debuter la partie : ");
 							start = command.equals("start");
 						}
 						startGame();
@@ -202,7 +204,7 @@ public class App implements Runnable{
 		msgReader.getMessage();
 	}
 
-	private String askString(String msg, Scanner scan){
+	private String askString(String msg){
 		String temp;
 		System.out.println(msg);
 		temp = scan.nextLine();
@@ -242,5 +244,31 @@ public class App implements Runnable{
 	public void movePlayer(int value) {
 		System.out.println("Le joueur avance de " + value + " cases.");
 		currentGame.movePlayer(value);
+	}
+
+	public void selectGame(Map<Integer, String> map) {
+		// choisi le mini-jeu voulu
+		System.out.println("Veuillez selectionner un mini-jeu parmis les jeux suivants :");
+		Collection<String> choices = map.values();
+		int i = 0;
+		for (String name : choices){
+			System.out.println("[" + i + "] : " + name);
+			i++;
+		}
+		int selected = -1;
+		while(selected < 0 || selected >= choices.size()){
+			selected = scan.nextInt();
+			scan.nextLine(); // consume the return line
+		}
+		// on indique notre reponse
+		ChooseGame chooseMsg = new ChooseGame(selected);
+		chooseMsg.accept(msgHandler);
+	}
+
+	public void startGame(int gameId, int seed) {
+		System.out.println("Je dois commencer le jeu dont l'id est " + gameId + " avec un seed de " + seed + ".");
+		// pas implementer car on n'a pas encore de mini-jeu
+		SendResult resultMsg = new SendResult(42);
+		resultMsg.accept(msgHandler);
 	}
 }

@@ -95,6 +95,20 @@ public class MessageReader {
 					// traitement du message
 					application.movePlayer(mvt.getSquareToMove());
 					break;
+				case Protocol.CMD_SELECT_GAME:
+					// deserialisation du message
+					msgJson = in.readLine();
+					SelectGame selectGame = JsonObjectMapper.parseJson(msgJson, SelectGame.class);
+					// traitement du message
+					application.selectGame(selectGame.getGamesMap());
+					break;
+				case Protocol.CMD_START_GAME:
+					// deserialisation du message
+					msgJson = in.readLine();
+					StartGame startGame = JsonObjectMapper.parseJson(msgJson, StartGame.class);
+					// traitement du message
+					application.startGame(startGame.getGameId(), startGame.getSeed());
+					break;
 				default:
 					System.out.println("Commande non reconnue...");
 					break;
