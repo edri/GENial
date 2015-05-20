@@ -10,11 +10,15 @@ public class Game {
 	private String winner;
 	private ArrayList<String> players = new ArrayList<>();
 	private Map<String, Integer> positions = new HashMap<>();
+	private String name;
+	private int maxPlayers;
 	
-	public Game(int nbCases, int difficulty, ArrayList<String> players) {
+	public Game(int nbCases, int difficulty, ArrayList<String> players, String name, int maxPlayers) {
 		this.nbCases = nbCases;
 		this.players = players;
 		this.difficulty = difficulty;
+		this.name = name;
+		this.maxPlayers = maxPlayers;
 		
 		for (String player : players)
 		{
@@ -22,6 +26,14 @@ public class Game {
 		}
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public int getMaxPlayers() {
+		return maxPlayers;
+	}
+
 	public int getNbCases() {
 		return nbCases;
 	}

@@ -40,10 +40,9 @@ public class ClientWorker implements Runnable {
 
 		String command;
 		boolean exit = false;
-		writer.println("ping");
-		writer.println("");
 		try {
 			while (!exit && ((command = reader.readLine()) != null)) {
+				System.out.println("Serveur a reçu la commande : " + command);
 				switch (command) {
 					case Protocol.CMD_AUTH:
 						AUTH authMsg = JsonObjectMapper.parseJson(reader.readLine(), AUTH.class);
@@ -57,10 +56,16 @@ public class ClientWorker implements Runnable {
 						break;
 						
 					case Protocol.CMD_REGISTER:
-						REGISTER reg = JsonObjectMapper.parseJson(reader.readLine(), REGISTER.class);
+						System.out.println("Debut de register");
+						String line = reader.readLine();
+						System.out.println("Recu le json : "  + line);
+						REGISTER reg = JsonObjectMapper.parseJson(line, REGISTER.class);
+						System.out.println("Fin de register : " + reg.getName() + ", " + reg.getPwd());
 						
 						if(true) {
+							System.out.println("Je vais écrire " + Protocol.CMD_ACCEPT);
 							writer.println(Protocol.CMD_ACCEPT);
+							System.out.println("J'ai fini.");
 						} else {
 							writer.println(Protocol.CMD_REFUSE);
 						}
@@ -96,6 +101,7 @@ public class ClientWorker implements Runnable {
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			// Un client se déconnecte
 			try {
 				socket.close();
