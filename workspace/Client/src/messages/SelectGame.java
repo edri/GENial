@@ -10,6 +10,10 @@ import communication.MessageHandler;
 public class SelectGame extends Message {
 	private Map<Integer, String> gamesMap;
 	
+	public SelectGame(){
+		gamesMap = null;
+	}
+	
 	public SelectGame(Map<Integer, String> map){
 		gamesMap = map;
 	}

@@ -56,16 +56,13 @@ public class Connection {
 	}
 	
 	public synchronized void sendMsg(String ident, String msgJson){
-		out.write(ident);
-		out.println();
-		out.write(msgJson);
-		out.println();
+		out.println(ident);
+		out.println(msgJson);
 		out.flush();
 	}
 	
 	public synchronized void sendMsg(String ident){
-		out.write(ident);
-		out.println();
+		out.println(ident);
 		out.flush();
 	}
 

@@ -9,6 +9,11 @@ public class StartGame extends Message {
 	private int gameId;
 	private int seed;
 	
+	public StartGame(){
+		gameId = -1;
+		seed = -1;
+	}
+	
 	public StartGame(int gameId, int seed){
 		this.gameId = gameId;
 		this.seed = seed;
