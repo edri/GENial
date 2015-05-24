@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -73,6 +75,8 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    private final JLabel lblTime = new JLabel("00:30");
    private final JLabel[] flames = new JLabel[3];
    private final JLabel[] chars = new JLabel[3];
+   private final JLabel[] messages = new JLabel[3];
+   private int position;
 
    public LetterHeroView(LetterHeroMod modele) throws IOException
    {
@@ -110,6 +114,12 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
          chars[i].setFont(new Font("TimeRoman",  Font.BOLD, 100));
          chars[i].setBounds(modele.getXPosition(i), 485, 100, 100);
          img.add(chars[i]);
+         
+         messages[i] = new JLabel("PARFAIT !", JLabel.CENTER);
+         messages[i].setFont(new Font("TimeRoman",  Font.BOLD, 40));
+         messages[i].setBounds(modele.getXPosition(i) - 45, 450, 200, 50);
+         messages[i].setVisible(false);
+         img.add(messages[i]);
       }
       
       pack();
@@ -126,8 +136,8 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
          flames[i].setBounds(modele.getXPosition(i), modele.getYPosition(i), 100, 100);
          chars[i].setText(Character.toString(modele.getChar(i)));
       }
-      
       lblTime.setText("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));
+      
    }
 
    @Override
@@ -135,35 +145,68 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
 
    @Override
    public void keyPressed(KeyEvent e)
-   {      
+   {
       if (!modele.isAlive())
       {
          modele.startThread();
       }
       else
       {
-         boolean correct = false;
-
+         position = -1;
+         
          for (int i = 0; i < flames.length; ++i)
          {
             if (modele.getChar(i) == Character.toUpperCase(e.getKeyChar()))
             {
                if (modele.getYPosition(i) >= 450 && modele.getYPosition(i) <= 500)
                {
-                  correct = true;
+                  position = i;
+                  messages[i].setText("PARFAIT !");
                   modele.incScore(30);
+                  break;
                }
                else if (modele.getYPosition(i) >= 385 && modele.getYPosition(i) <= 585)
                {
-                  correct = true;
+                  position = i;
+                  messages[i].setText("BIEN !");
                   modele.incScore(10);
+                  break;
                }
             }
          }
 
-         if (!correct)
+         if (position == -1)
          {
             modele.incScore(-10);
+         }
+         else
+         {
+            Timer timer = new Timer("Timer" + position);            
+            
+            messages[position].setVisible(true);
+            
+            timer.scheduleAtFixedRate(new TimerTask() {
+               private int initSize = 40;
+               
+               @Override
+               public void run() {
+                  messages[position].setFont(new Font("TimeRoman",  Font.BOLD, --initSize));
+                  messages[position].setBounds(messages[position].getX() + 2, 
+                                               messages[position].getY() - 3, 
+                                               messages[position].getFontMetrics(messages[position].getFont()).stringWidth(messages[position].getText()), 
+                                               50);
+                  
+                  if (initSize == 0)
+                  {
+                     messages[position].setFont(new Font("TimeRoman",  Font.BOLD, 40));
+                     messages[position].setBounds(modele.getXPosition(position) - 45, 450, 200, 50);
+                     messages[position].setVisible(false);
+                     
+                     timer.cancel();
+                     timer.purge();
+                  }
+               }
+            }, 0, 15);
          }
       }
    }

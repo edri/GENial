@@ -20,7 +20,7 @@ public class LetterHeroMod extends Observable implements Runnable
    private final int MAX_NEW_Y = -500;
    private final int threadTime;
    private final Thread activity;
-   private int currentLeftSeconds = 5;
+   private int currentLeftSeconds = 31;
    private int[] yPositions_ = {MIN_NEW_Y, MAX_NEW_Y, (MIN_NEW_Y + MAX_NEW_Y) / 2};
    private int[] xPositions = {20, 175, 325};
    private char[] chars = new char[3];
