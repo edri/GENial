@@ -72,7 +72,7 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    
    private final LetterHeroMod modele;
    private final JLabel lblScore = new JLabel("Score : 0");
-   private final JLabel lblTime = new JLabel("00:30");
+   private final JLabel lblTime;
    private final JLabel lblEndGame;
    private final JLabel[] flames = new JLabel[3];
    private final JLabel[] chars = new JLabel[3];
@@ -103,6 +103,7 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       lblScore.setBounds(5, 5, HAUTEUR, 15);
       img.add(lblScore);
       
+      lblTime = new JLabel("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));
       lblTime.setForeground(Color.WHITE);
       lblTime.setFont(new Font("TimeRoman",  Font.BOLD, 15));
       lblTime.setBounds(LARGEUR - 50, 5, HAUTEUR, 15);

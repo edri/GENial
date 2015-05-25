@@ -25,7 +25,7 @@ public class LetterHeroMod extends Observable implements Runnable
    private final char[] chars = new char[3];
    private final TimerTask task;
    private final Random random;
-   private int currentLeftSeconds = 6;
+   private int currentLeftSeconds = 30;
    private Timer timer = new Timer();
    private boolean running;
    
@@ -50,7 +50,6 @@ public class LetterHeroMod extends Observable implements Runnable
             if (--currentLeftSeconds == -1)
             {
                running = false;
-               currentLeftSeconds = 0;
                timer.cancel();
                timer.purge();
             }
@@ -82,7 +81,7 @@ public class LetterHeroMod extends Observable implements Runnable
       if (!activity.isAlive())
          activity.start();
       
-      timer.scheduleAtFixedRate(task, 0, 1000);
+      timer.scheduleAtFixedRate(task, 1000, 1000);
    }
 
    @Override
@@ -93,6 +92,8 @@ public class LetterHeroMod extends Observable implements Runnable
          try {Thread.sleep(threadTime);}catch(InterruptedException e) {}         
          move();
       }
+      
+      currentLeftSeconds = 0;
       
       // On indique que l'état de l'objet a été modifié.
       setChanged();
