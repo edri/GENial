@@ -20,13 +20,14 @@ public class LetterHeroMod extends Observable implements Runnable
    private final int MAX_NEW_Y = -500;
    private final int threadTime;
    private final Thread activity;
-   private int currentLeftSeconds = 31;
-   private int[] yPositions_ = {MIN_NEW_Y, MAX_NEW_Y, (MIN_NEW_Y + MAX_NEW_Y) / 2};
-   private int[] xPositions = {20, 175, 325};
-   private char[] chars = new char[3];
-   private Random random;
+   private final int[] yPositions_ = {MIN_NEW_Y, MAX_NEW_Y, (MIN_NEW_Y + MAX_NEW_Y) / 2};
+   private final int[] xPositions = {20, 175, 325};
+   private final char[] chars = new char[3];
+   private final TimerTask task;
+   private final Random random;
+   private int currentLeftSeconds = 6;
    private Timer timer = new Timer();
-   private TimerTask task;
+   private boolean running;
    
    private int score = 0;
    
@@ -40,6 +41,7 @@ public class LetterHeroMod extends Observable implements Runnable
          chars[i] = (char)(random.nextInt(90 - 65 + 1) + 65);
       }
       
+      running = true;
       activity = new Thread(this);
       
       task = new TimerTask() {
@@ -47,7 +49,10 @@ public class LetterHeroMod extends Observable implements Runnable
          public void run() {
             if (--currentLeftSeconds == -1)
             {
-               System.exit(0);
+               running = false;
+               currentLeftSeconds = 0;
+               timer.cancel();
+               timer.purge();
             }
          }
       };
@@ -83,11 +88,16 @@ public class LetterHeroMod extends Observable implements Runnable
    @Override
    public void run()
    {
-      while (true)
+      while (running)
       {
          try {Thread.sleep(threadTime);}catch(InterruptedException e) {}         
          move();
       }
+      
+      // On indique que l'état de l'objet a été modifié.
+      setChanged();
+      // On notifie les observateurs que l'objet a été modifié.
+      notifyObservers();
    }
    
    public void incScore(int inc)
@@ -128,5 +138,10 @@ public class LetterHeroMod extends Observable implements Runnable
    public boolean isAlive()
    {
       return activity.isAlive();
+   }
+   
+   public boolean isGameRunning()
+   {
+      return running;
    }
 }

@@ -73,15 +73,19 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    private final LetterHeroMod modele;
    private final JLabel lblScore = new JLabel("Score : 0");
    private final JLabel lblTime = new JLabel("00:30");
+   private final JLabel lblEndGame;
    private final JLabel[] flames = new JLabel[3];
    private final JLabel[] chars = new JLabel[3];
    private final JLabel[] messages = new JLabel[3];
+   private final boolean[] isPositionOccuped;
    private int position;
 
    public LetterHeroView(LetterHeroMod modele) throws IOException
    {
       this.modele = modele;
       this.modele.addObserver(this);
+      
+      isPositionOccuped = new boolean[3];
       
       setTitle("LetterHero");
       setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
@@ -104,6 +108,11 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       lblTime.setBounds(LARGEUR - 50, 5, HAUTEUR, 15);
       img.add(lblTime);
       
+      lblEndGame = new JLabel(new ImageIcon(ImageIO.read(new File("images/finish.png"))), JLabel.CENTER);
+      lblEndGame.setBounds(0, 250, LARGEUR, 80);
+      lblEndGame.setVisible(false);
+      img.add(lblEndGame);
+      
       for (int i = 0; i < flames.length; ++i)
       {
          flames[i] = new JLabel(new ImageIcon(ImageIO.read(new File("images/flame" + (i + 1) + ".png"))));
@@ -120,6 +129,8 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
          messages[i].setBounds(modele.getXPosition(i) - 45, 450, 200, 50);
          messages[i].setVisible(false);
          img.add(messages[i]);
+         
+         isPositionOccuped[i] = false;
       }
       
       pack();
@@ -129,15 +140,21 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    @Override
    public void update(Observable o, Object arg)
    {
-      lblScore.setText("Score : " + modele.getScore() + " ");
-      
-      for (int i = 0; i < flames.length; ++i)
+      if (modele.isGameRunning())
       {
-         flames[i].setBounds(modele.getXPosition(i), modele.getYPosition(i), 100, 100);
-         chars[i].setText(Character.toString(modele.getChar(i)));
+         lblScore.setText("Score : " + modele.getScore() + " ");
+
+         for (int i = 0; i < flames.length; ++i)
+         {
+            flames[i].setBounds(modele.getXPosition(i), modele.getYPosition(i), 100, 100);
+            chars[i].setText(Character.toString(modele.getChar(i)));
+         }
+         lblTime.setText("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));
       }
-      lblTime.setText("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));
-      
+      else
+      {
+         lblEndGame.setVisible(true);
+      }
    }
 
    @Override
@@ -146,17 +163,17 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    @Override
    public void keyPressed(KeyEvent e)
    {
-      if (!modele.isAlive())
+      if (modele.isGameRunning() && !modele.isAlive())
       {
          modele.startThread();
       }
-      else
+      else if (modele.isGameRunning())
       {
          position = -1;
          
          for (int i = 0; i < flames.length; ++i)
          {
-            if (modele.getChar(i) == Character.toUpperCase(e.getKeyChar()))
+            if (!isPositionOccuped[i] && modele.getChar(i) == Character.toUpperCase(e.getKeyChar()))
             {
                if (modele.getYPosition(i) >= 450 && modele.getYPosition(i) <= 500)
                {
@@ -179,28 +196,37 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
          {
             modele.incScore(-10);
          }
-         else
+         else if (!isPositionOccuped[position])
          {
+            isPositionOccuped[position] = true;
+                  
             Timer timer = new Timer("Timer" + position);            
             
             messages[position].setVisible(true);
             
             timer.scheduleAtFixedRate(new TimerTask() {
                private int initSize = 40;
+               private final int positionC;
+               
+               {
+                  positionC = position;
+               }
                
                @Override
                public void run() {
-                  messages[position].setFont(new Font("TimeRoman",  Font.BOLD, --initSize));
-                  messages[position].setBounds(messages[position].getX() + 2, 
-                                               messages[position].getY() - 3, 
-                                               messages[position].getFontMetrics(messages[position].getFont()).stringWidth(messages[position].getText()), 
+                  messages[positionC].setFont(new Font("TimeRoman",  Font.BOLD, --initSize));
+                  messages[positionC].setBounds(messages[positionC].getX() + 2, 
+                                               messages[positionC].getY() - 3, 
+                                               messages[positionC].getFontMetrics(messages[positionC].getFont()).stringWidth(messages[positionC].getText()), 
                                                50);
                   
                   if (initSize == 0)
                   {
-                     messages[position].setFont(new Font("TimeRoman",  Font.BOLD, 40));
-                     messages[position].setBounds(modele.getXPosition(position) - 45, 450, 200, 50);
-                     messages[position].setVisible(false);
+                     messages[positionC].setFont(new Font("TimeRoman",  Font.BOLD, 40));
+                     messages[positionC].setBounds(modele.getXPosition(positionC) - 45, 450, 200, 50);
+                     messages[positionC].setVisible(false);
+                     
+                     isPositionOccuped[positionC] = false;
                      
                      timer.cancel();
                      timer.purge();
