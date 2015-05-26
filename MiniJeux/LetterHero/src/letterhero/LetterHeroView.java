@@ -79,7 +79,7 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       addKeyListener(this);
       
-      ImagePanel img = new ImagePanel(ImageIO.read(new File("background.png")));
+      ImagePanel img = new ImagePanel(ImageIO.read(new File("images/background.png")));
       img.setLayout(null);
       setContentPane(img);
       
