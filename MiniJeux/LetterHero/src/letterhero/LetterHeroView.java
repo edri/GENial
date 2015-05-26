@@ -21,9 +21,6 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
@@ -166,11 +163,7 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       {
          try {
             modele.startThread();
-         } catch (LineUnavailableException ex) {
-            Logger.getLogger(LetterHeroView.class.getName()).log(Level.SEVERE, null, ex);
-         } catch (UnsupportedAudioFileException ex) {
-            Logger.getLogger(LetterHeroView.class.getName()).log(Level.SEVERE, null, ex);
-         } catch (IOException ex) {
+         } catch (LineUnavailableException | UnsupportedAudioFileException | IOException ex) {
             Logger.getLogger(LetterHeroView.class.getName()).log(Level.SEVERE, null, ex);
          }
       }
@@ -183,23 +176,7 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
             if (!isPositionOccuped[i] && modele.getChar(i) == Character.toUpperCase(e.getKeyChar()))
             {
                if (modele.getYPosition(i) >= 450 && modele.getYPosition(i) <= 500)
-               {         
-                  AudioInputStream inputStream;
-                  Clip perfectSound;
-                  
-                  try {
-                     inputStream = AudioSystem.getAudioInputStream (LetterHeroMod.class.getResourceAsStream("perfect.wav"));
-                     perfectSound = AudioSystem.getClip();
-                     perfectSound.open(inputStream);
-                     perfectSound.start();
-                  } catch (UnsupportedAudioFileException ex) {
-                     Logger.getLogger(LetterHeroView.class.getName()).log(Level.SEVERE, null, ex);
-                  } catch (LineUnavailableException ex) {
-                     Logger.getLogger(LetterHeroView.class.getName()).log(Level.SEVERE, null, ex);
-                  } catch (IOException ex) {
-                     Logger.getLogger(LetterHeroView.class.getName()).log(Level.SEVERE, null, ex);
-                  }
-                  
+               {                  
                   position = i;
                   messages[i].setText("PARFAIT !");
                   modele.incScore(30);
