@@ -41,34 +41,15 @@ class ImagePanel extends JComponent
    }
 }
 
-class Letter extends JComponent
-{
-   // designed by Freepik.com
-   private final Image image;
-   private final char letter;
-   
-   public Letter(Image image, char letter)
-   {
-      this.image = image;
-      this.letter = letter;
-   }
-   
-   @Override
-   protected void paintComponent(Graphics g)
-   {
-      super.paintComponent(g);
-      g.drawImage(image, 0, 0, this);
-   }
-}
-
 /**
  *
  * @author Miguel
  */
 public class LetterHeroView extends JFrame implements Observer, KeyListener
 {
-   private final static int HAUTEUR = 700;
-   private final static int LARGEUR = 450;
+   private final int HAUTEUR;
+   private final int LARGEUR;
+   private final int SIZE_FLAMES;
    
    private final LetterHeroMod modele;
    private final JLabel lblScore = new JLabel("Score : 0");
@@ -84,6 +65,10 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    {
       this.modele = modele;
       this.modele.addObserver(this);
+      
+      HAUTEUR = modele.getHauteur();
+      LARGEUR = modele.getLargeur();
+      SIZE_FLAMES = modele.getSizeFlames();
       
       isPositionOccuped = new boolean[3];
       
@@ -117,12 +102,12 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       for (int i = 0; i < flames.length; ++i)
       {
          flames[i] = new JLabel(new ImageIcon(ImageIO.read(new File("images/flame" + (i + 1) + ".png"))));
-         flames[i].setBounds(modele.getXPosition(i), modele.getYPosition(i), 100, 100);
+         flames[i].setBounds(modele.getXPosition(i), modele.getYPosition(i), SIZE_FLAMES, SIZE_FLAMES);
          img.add(flames[i]);
          
          chars[i] = new JLabel(Character.toString(modele.getChar(i)), JLabel.CENTER);
          chars[i].setFont(new Font("TimeRoman",  Font.BOLD, 100));
-         chars[i].setBounds(modele.getXPosition(i), 485, 100, 100);
+         chars[i].setBounds(modele.getXPosition(i), 485, SIZE_FLAMES, SIZE_FLAMES);
          img.add(chars[i]);
          
          messages[i] = new JLabel("PARFAIT !", JLabel.CENTER);
@@ -147,14 +132,20 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
 
          for (int i = 0; i < flames.length; ++i)
          {
-            flames[i].setBounds(modele.getXPosition(i), modele.getYPosition(i), 100, 100);
+            flames[i].setBounds(modele.getXPosition(i), modele.getYPosition(i), SIZE_FLAMES, SIZE_FLAMES);
             chars[i].setText(Character.toString(modele.getChar(i)));
          }
          lblTime.setText("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));
       }
       else
       {
+         lblTime.setText("00:00");
          lblEndGame.setVisible(true);
+         
+         for (int i = 0; i < flames.length; ++i)
+         {
+            flames[i].setVisible(false);
+         }
       }
    }
 
