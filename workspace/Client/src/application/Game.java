@@ -10,11 +10,16 @@ public class Game {
 	private String winner;
 	private ArrayList<String> players = new ArrayList<>();
 	private Map<String, Integer> positions = new HashMap<>();
+	private String name;
+	private String playerTurn;
+	private int maxPlayers;
 	
-	public Game(int nbCases, int difficulty, ArrayList<String> players) {
+	public Game(int nbCases, int difficulty, ArrayList<String> players, String name, int maxPlayers) {
 		this.nbCases = nbCases;
 		this.players = players;
 		this.difficulty = difficulty;
+		this.name = name;
+		this.maxPlayers = maxPlayers;
 		
 		for (String player : players)
 		{
@@ -22,6 +27,14 @@ public class Game {
 		}
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public int getMaxPlayers() {
+		return maxPlayers;
+	}
+
 	public int getNbCases() {
 		return nbCases;
 	}
@@ -46,9 +59,9 @@ public class Game {
 		this.players = players;
 	}
 
-	public boolean movePlayer(String name, int moveValue)
+	public boolean movePlayer(int moveValue)
 	{
-		int newPosition = positions.get(name) + moveValue;
+		int newPosition = positions.get(playerTurn) + moveValue;
 		
 		if (newPosition >= nbCases)
 		{
@@ -76,5 +89,21 @@ public class Game {
 		{
 			System.out.println("\t" + player + " : " + positions.get(player) + ".");
 		}
+	}
+
+	public void addPlayer(String name) {
+		players.add(name);
+	}
+	
+	public void removePlayer(String name) {
+		for(int i = 0; i < players.size(); i++){
+			if (players.get(i).equals(name)){
+				players.remove(i);
+			}
+		}
+	}
+	
+	public void setPlayerTurn(String name){
+		playerTurn = name;
 	}
 }

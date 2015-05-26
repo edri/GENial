@@ -8,6 +8,10 @@ import communication.MessageHandler;
 public class SendResult extends Message {
 	private int score;
 	
+	public SendResult(){
+		score = -1;
+	}
+	
 	public SendResult(int score){
 		this.score = score;
 	}

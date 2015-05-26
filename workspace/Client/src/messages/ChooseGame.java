@@ -8,6 +8,10 @@ import communication.MessageHandler;
 public class ChooseGame extends Message {
 	private int gameId;
 	
+	public ChooseGame(){
+		gameId = -1;
+	}
+	
 	public ChooseGame(int i){
 		gameId = i;
 	}
