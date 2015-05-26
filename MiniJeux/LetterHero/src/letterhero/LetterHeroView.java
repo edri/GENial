@@ -56,8 +56,9 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    private final int SIZE_FLAMES;
    
    private final LetterHeroMod modele;
-   private final JLabel lblScore = new JLabel("Score : 0");
+   private final JLabel lblScore;
    private final JLabel lblTime;
+   private final JLabel lblStartGame;
    private final JLabel lblEndGame;
    private final JLabel[] flames = new JLabel[3];
    private final JLabel[] chars = new JLabel[3];
@@ -87,6 +88,7 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       img.setLayout(null);
       setContentPane(img);
       
+      lblScore = new JLabel("Score : 0");
       lblScore.setForeground(Color.WHITE);
       lblScore.setFont(new Font("TimeRoman",  Font.BOLD, 15));
       lblScore.setBounds(5, 5, HAUTEUR, 15);
@@ -97,6 +99,12 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       lblTime.setFont(new Font("TimeRoman",  Font.BOLD, 15));
       lblTime.setBounds(LARGEUR - 50, 5, HAUTEUR, 15);
       img.add(lblTime);
+      
+      lblStartGame = new JLabel("Appuyez sur n'importe quelle touche pour commencer.", JLabel.CENTER);
+      lblStartGame.setForeground(Color.WHITE);
+      lblStartGame.setFont(new Font("TimeRoman",  Font.BOLD, 17));
+      lblStartGame.setBounds(0, 250, LARGEUR, 50);
+      img.add(lblStartGame);
       
       lblEndGame = new JLabel(new ImageIcon(ImageIO.read(new File("images/finish.png"))), JLabel.CENTER);
       lblEndGame.setBounds(0, 250, LARGEUR, 80);
@@ -161,6 +169,8 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    {
       if (modele.isGameRunning() && !modele.isAlive())
       {
+         lblStartGame.setVisible(false);
+         
          try {
             modele.startThread();
          } catch (LineUnavailableException | UnsupportedAudioFileException | IOException ex) {
