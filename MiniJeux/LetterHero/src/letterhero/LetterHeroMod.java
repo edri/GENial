@@ -5,10 +5,16 @@
  */
 package letterhero;
 
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  *
@@ -86,8 +92,13 @@ public class LetterHeroMod extends Observable implements Runnable
       notifyObservers();
    }
    
-   public void startThread()
-   {      
+   public void startThread() throws LineUnavailableException, UnsupportedAudioFileException, IOException
+   {
+      Clip music = AudioSystem.getClip();
+      AudioInputStream inputStream = AudioSystem.getAudioInputStream (LetterHeroMod.class.getResourceAsStream("music.wav"));
+      music.open(inputStream);
+      music.start(); 
+      
       if (!activity.isAlive())
          activity.start();
       
