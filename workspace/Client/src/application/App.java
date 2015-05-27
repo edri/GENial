@@ -87,6 +87,7 @@ public class App implements Runnable{
 			msgReader.getMessage();
 
 			// JOIN or CREATE
+			success = false;
 			boolean firstTurn = true;
 			while(!success){
 				if (!firstTurn){
@@ -177,6 +178,9 @@ public class App implements Runnable{
 		joinMsg.accept(msgHandler);
 		// recuperation de la reponse
 		msgReader.getMessage();
+		if (success){
+			currentGame = games.get(0); // TODO choper via le nom
+		}
 	}
 
 	private void refreshGamesList(){
