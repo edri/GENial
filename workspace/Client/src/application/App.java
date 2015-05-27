@@ -85,9 +85,9 @@ public class App implements Runnable{
 			// utilisateur est maintenant identifie
 			// recuperation de la liste des parties
 			msgReader.getMessage();
-
-			// JOIN or CREATE
 			success = false;
+			
+			// JOIN or CREATE
 			boolean firstTurn = true;
 			while(!success){
 				if (!firstTurn){
@@ -96,7 +96,7 @@ public class App implements Runnable{
 					firstTurn = false;
 				}
 				
-				// 2 choix, soit on rejoins une nouvelle partie, soit on en rejoins une
+				// 2 choix, soit on cree une nouvelle partie, soit on en rejoins une
 				choix = -1;
 				while(choix < 0 || choix > 1){
 					System.out.println("Voulez-vous creer une partie [0] ou en rejoindre une [1] ?");
@@ -180,6 +180,7 @@ public class App implements Runnable{
 		msgReader.getMessage();
 		if (success){
 			currentGame = games.get(0); // TODO choper via le nom
+			currentGame.addPlayer(clientName); //TODO possibilite de concurrence ici !!!!
 		}
 	}
 
@@ -239,7 +240,7 @@ public class App implements Runnable{
 		System.out.println("C'est a " + name + "de lancer les des !");
 		currentGame.setPlayerTurn(name);
 		
-		if (name.equals(clientName)){ // roll si c'est le tour du joueur
+		if (name.equals(clientName)) { // roll si c'est le tour du joueur
 			Roll roll = new Roll();
 			roll.accept(msgHandler);
 		}
