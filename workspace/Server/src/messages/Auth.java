@@ -9,6 +9,11 @@ public class Auth extends Message {
 	private String name;
 	private String hashPwd;
 	
+	public Auth() {
+		// TODO Auto-generated constructor stub
+		name = "";
+		hashPwd = "";
+	}
 	public Auth(String n, String pwd){
 		name = n;
 		hashPwd = pwd;
