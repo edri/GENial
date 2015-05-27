@@ -5,10 +5,16 @@
  */
 package letterhero;
 
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  *
@@ -16,6 +22,10 @@ import java.util.TimerTask;
  */
 public class LetterHeroMod extends Observable implements Runnable
 {
+   private final int HAUTEUR = 700;
+   private final int LARGEUR = 450;
+   private final int SIZE_FLAMES = 100;
+   
    private final int MIN_NEW_Y = -100;
    private final int MAX_NEW_Y = -500;
    private final int threadTime;
@@ -25,6 +35,7 @@ public class LetterHeroMod extends Observable implements Runnable
    private final char[] chars = new char[3];
    private final TimerTask task;
    private final Random random;
+   private final double timeToSlide;
    private int currentLeftSeconds = 30;
    private Timer timer = new Timer();
    private boolean running;
@@ -40,6 +51,8 @@ public class LetterHeroMod extends Observable implements Runnable
       {
          chars[i] = (char)(random.nextInt(90 - 65 + 1) + 65);
       }
+      
+      timeToSlide = ((HAUTEUR + SIZE_FLAMES) * threadTime) / 1000.0;
       
       running = true;
       activity = new Thread(this);
@@ -65,8 +78,11 @@ public class LetterHeroMod extends Observable implements Runnable
 
          if (yPositions_[i] > 650)
          {
-            yPositions_[i] = -1 * (random.nextInt(-MAX_NEW_Y + MIN_NEW_Y + 1) - MIN_NEW_Y);
-            chars[i] = (char)(random.nextInt(90 - 65 + 1) + 65);
+            if (currentLeftSeconds > timeToSlide + 0.2)
+            {
+               yPositions_[i] = -1 * (random.nextInt(-MAX_NEW_Y + MIN_NEW_Y + 1) - MIN_NEW_Y);
+               chars[i] = (char)(random.nextInt(90 - 65 + 1) + 65);
+            }
          }
       }
       
@@ -76,8 +92,13 @@ public class LetterHeroMod extends Observable implements Runnable
       notifyObservers();
    }
    
-   public void startThread()
-   {      
+   public void startThread() throws LineUnavailableException, UnsupportedAudioFileException, IOException
+   {
+      Clip music = AudioSystem.getClip();
+      AudioInputStream inputStream = AudioSystem.getAudioInputStream (LetterHeroMod.class.getResourceAsStream("music.wav"));
+      music.open(inputStream);
+      music.start(); 
+      
       if (!activity.isAlive())
          activity.start();
       
@@ -109,6 +130,21 @@ public class LetterHeroMod extends Observable implements Runnable
       setChanged();
       // On notifie les observateurs que l'objet a été modifié.
       notifyObservers();
+   }
+   
+   public int getHauteur()
+   {
+      return HAUTEUR;
+   }
+   
+   public int getLargeur()
+   {
+      return LARGEUR;
+   }
+   
+   public int getSizeFlames()
+   {
+      return SIZE_FLAMES;
    }
    
    public int getScore()
