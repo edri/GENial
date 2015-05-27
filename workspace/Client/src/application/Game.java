@@ -1,5 +1,4 @@
 package application;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +12,9 @@ public class Game {
 	private String name;
 	private String playerTurn;
 	private int maxPlayers;
+	
+	public Game() {
+	}
 	
 	public Game(int nbCases, int difficulty, ArrayList<String> players, String name, int maxPlayers) {
 		this.nbCases = nbCases;
@@ -105,5 +107,21 @@ public class Game {
 	
 	public void setPlayerTurn(String name){
 		playerTurn = name;
+	}
+	
+	public void setMaxPlayers(int maxPlayers) {
+		this.maxPlayers = maxPlayers;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setPositions(Map<String, Integer> positions) {
+		this.positions = positions;
+	}
+	
+	public void setWinner(String winner) {
+		this.winner = winner;
 	}
 }
