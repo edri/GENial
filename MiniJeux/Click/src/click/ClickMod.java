@@ -29,7 +29,6 @@ class Slurpeur extends Observable implements Runnable {
 	private Slurpeur () throws IOException {
 		this.posX = 100;
 		this.posY = 100;
-		System.out.println("Coucou, je suis un nouveau slurpeur, attrape moi !");
 	}
 	
 	public static Slurpeur getInstance() {
@@ -70,7 +69,7 @@ class Slurpeur extends Observable implements Runnable {
 		switch (direction) {
 		case NORD:
 			this.posY -= 1;
-			if(posY <= 0) {
+			if(posY <= -50) {
 				posY = 700;
 			}
 			this.setChanged();
@@ -79,7 +78,7 @@ class Slurpeur extends Observable implements Runnable {
 		case SUD:
 			this.posY += 1;
 			if (posY > 700) {
-				posY = 0;
+				posY = -50;
 			}
 			this.setChanged();
 			this.notifyObservers();
@@ -87,14 +86,14 @@ class Slurpeur extends Observable implements Runnable {
 		case EST:
 			this.posX += 1;
 			if (posX > 700) {
-				posX = 0;
+				posX = -50;
 			}
 			this.setChanged();
 			this.notifyObservers();
 			break;
 		case OUEST:
 			this.posX -= 1;
-			if (posX < 0) {
+			if (posX < -50) {
 				posX = 700;
 			}
 			this.setChanged();
@@ -106,15 +105,16 @@ class Slurpeur extends Observable implements Runnable {
 	}
 
 	
-	public void jum() throws InterruptedException {
-			Random direction = new Random();
-			int nouvelleDirection = direction.nextInt(3);
-			
+	public void jump() throws InterruptedException {
+			Random direction = new Random();		
 			Random pas = new Random();
-			int nbDePas = pas.nextInt(400) + 100;
 			
 			Directions ancienneDirection = this.direction;
+			int nouvelleDirection = direction.nextInt(4);
 			
+			int nbDePas = pas.nextInt(150) + 100;
+			
+			Thread.sleep(30);
 			switch (nouvelleDirection) {
 			case (0):			// Nord
 				this.direction = Directions.NORD;
@@ -163,17 +163,20 @@ class Slurpeur extends Observable implements Runnable {
 			}	
 			this.direction = ancienneDirection;
 			this.setChanged();
-			this.notifyObservers();
-			
+			this.notifyObservers();	
 	} 
 	
+	
+	/**
+	 * 
+	 */
 	public void run() {
 		while (true) {
 		   	 // Choisir une direction
 	   	 	Random direction = new Random();
 			 Directions nouvelleDirection;
 
-			 switch(direction.nextInt(3)) {
+			 switch(direction.nextInt(4)) {
 			 case 0:
 				 nouvelleDirection = Directions.NORD;
 				 this.direction = Directions.NORD;
@@ -198,7 +201,7 @@ class Slurpeur extends Observable implements Runnable {
 			 
 			for (int i = 0; i < new Random().nextInt(200) + 100; ++i) {
 				try {
-					Thread.sleep(10);
+					Thread.sleep(4);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -212,8 +215,15 @@ class Slurpeur extends Observable implements Runnable {
 }
 
 
-
+/**
+ * 
+ * @author Mel
+ *
+ */
 public class ClickMod extends Observable {
+	
+	private final int difficulty;
+	private final int seed;
 	
 	// Pour le temps
     private Timer timer = new Timer();
@@ -227,8 +237,10 @@ public class ClickMod extends Observable {
 	private int score = 0;		// Score du joueur
 	
 	public ClickMod(int difficulty, int seed) throws IOException {
-		this.slurpeur = Slurpeur.getInstance();
+		this.difficulty = difficulty;
+		this.seed = seed;
 		
+		this.slurpeur = Slurpeur.getInstance();
 
 	    threadTime = (4 - difficulty);
 		activity = new Thread();
@@ -261,11 +273,11 @@ public class ClickMod extends Observable {
 	      return currentLeftSeconds;
 	}
 	
+	
 	 public void startThread()
 	   {      
 	      if (!activity.isAlive())
-	         activity.start();
-	      
+	         activity.start();	      
 	      timer.scheduleAtFixedRate(task, 0, 1000);
 	   }
 }

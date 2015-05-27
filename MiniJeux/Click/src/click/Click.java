@@ -12,19 +12,19 @@ public class Click {
     static int difficulty = 1;
     static int seed = 28;
 	
-    public static void loop() throws IOException, InterruptedException {
+    public static void startGame() throws IOException, InterruptedException {
  	   // Nouveau modèle
         ClickMod mod = new ClickMod(difficulty, seed);
         // Nouvelle vue
-       new ClickView(mod);
-       
+       new ClickView(mod);      
        mod.start(difficulty, seed);
        
     }
     
    public static void main(String[] args) throws IOException, InterruptedException {
-    
-      loop();			// Le jeu tourne - l'arrêter quand le chrono se termine
+	   // Jouer
+       Click.startGame();	
+       // Récupérer les données
       
    }
 }
