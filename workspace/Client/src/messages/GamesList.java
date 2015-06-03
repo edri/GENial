@@ -1,30 +1,32 @@
 package messages;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
 import application.Game;
+import application.Lobby;
 import communication.MessageHandler;
 
 /**
  * Indique au joueur la liste des parties disponibles
  */
 public class GamesList extends Message {
-	private ArrayList<Game> games;
+	private ArrayList<Lobby> games;
 	
 	public GamesList() {
-		games = new ArrayList<Game>();
+		games = new ArrayList<Lobby>();
 	}
 	
-	public GamesList(ArrayList<Game> games){
+	public GamesList(ArrayList<Lobby> games){
 		this.games = games;
 	}
 	
-	public ArrayList<Game> getGames() {
+	public ArrayList<Lobby> getGames() {
 		return games;
 	}
 
-	public void setGames(ArrayList<Game> games) {
+	public void setGames(ArrayList<Lobby> games) {
 		this.games = games;
 	}
 

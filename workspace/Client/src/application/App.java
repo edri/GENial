@@ -24,7 +24,7 @@ import gui.*;
 
 public class App implements Runnable{
 	private Game currentGame;
-	private List<Game> games;
+	private List<Lobby> games;
 	private Scanner scan;
 	private boolean start;
 	private boolean endGame;
@@ -42,7 +42,7 @@ public class App implements Runnable{
 		endGame = false;
 		currentGame = null;
 		clientName = "";
-		games = new ArrayList<Game>();
+		games = new ArrayList<Lobby>();
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
@@ -206,7 +206,8 @@ public class App implements Runnable{
 		// recuperation de la reponse
 		msgReader.getMessage();
 		if (success){
-			currentGame = games.get(0); // TODO choper via le nom
+			Lobby temp = games.get(0); // TODO choper via le nom
+			currentGame = new Game(temp.getNbSquares(), temp.getDifficulty(), temp.getPlayers(), temp.getName(), temp.getMaxPlayers()); 
 			currentGame.addPlayer(clientName); //TODO possibilite de concurrence ici !!!!
 		}
 	}
@@ -251,7 +252,7 @@ public class App implements Runnable{
 		success = b;
 	}
 
-	public void updateGames(List<Game> games){
+	public void updateLobbies(List<Lobby> games){
 		this.games = games;
 	}
 
