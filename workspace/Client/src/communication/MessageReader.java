@@ -39,14 +39,14 @@ public class MessageReader {
 					GamesList games = JsonObjectMapper.parseJson(msgJson, GamesList.class);
 					// traite le message
 					if (!games.getGames().isEmpty()) {
-						for (Game g : games.getGames()) {
-							System.out.print("Partie de " + g.getName() + ", " + g.getPlayers().size() + "/" + g.getMaxPlayers() + ", taille du plateau : " + g.getNbCases() + ", difficulté : " + g.getDifficulty());
+						for (Lobby g : games.getGames()) {
+							System.out.print("Partie de " + g.getName() + ", " + g.getPlayers().size() + "/" + g.getMaxPlayers() + ", taille du plateau : " + g.getNbSquares() + ", difficulté : " + g.getDifficulty());
 						}
 					} else {
 						System.out.println("Aucune partie existante");
 					}
 					// on met a jour la liste des jeux
-					application.updateGames(games.getGames());
+					application.updateLobbies(games.getGames());
 					break;
 				case Protocol.CMD_BEGIN:
 					System.out.println("Le jeu va commencer !");

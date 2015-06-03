@@ -29,58 +29,45 @@ public class Connection {
 		return instance;
 	}
 
-	public boolean connect(String addrIP){
+	public boolean connect(String addrIP) throws UnknownHostException, IOException{
 		// connection a un nouveau serveur
 		if (!ip.equals(addrIP)){
 			// ferme l'ancienne connexion si existante
 			if (!ip.equals("")){
 				disconnect();
 			}
-			
+
 			// ouvre la nouvelle connection
 			ip = addrIP;
-			try {
-				socket = new Socket(ip, Settings.serverPort);
+			socket = new Socket(ip, Settings.serverPort);
 
-				in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Settings.encoding));
-				out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Settings.encoding));
-			} catch (UnknownHostException e) {
-				System.out.println("Adresse IP inconnue!");
-				//e.printStackTrace();
-			} catch (IOException e) {
-				System.out.println("Impossible de se connecter au serveur!");
-				//e.printStackTrace();
-			}
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Settings.encoding));
+			out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Settings.encoding));
 		}
 		return socket == null ? false : !socket.isClosed();
 	}
-	
+
 	public synchronized void sendMsg(String ident, String msgJson){
 		out.println(ident);
 		out.println(msgJson);
 		out.flush();
 	}
-	
+
 	public synchronized void sendMsg(String ident){
 		out.println(ident);
 		out.flush();
 	}
 
-	public boolean disconnect(){
+	public boolean disconnect() throws IOException{
 		// essaie de fermer la connection
-		try {
-			socket.close();
-		} catch (IOException e) {
-			System.out.println("Deconnecte du serveur...");
-			//e.printStackTrace();
-		}
+		socket.close();
 		return socket == null ? true : !socket.isClosed();
 	}
-	
+
 	public BufferedReader getInputStream(){
 		return in;
 	}
-	
+
 	public PrintWriter getOutputStream(){
 		return out;
 	}
