@@ -54,6 +54,32 @@ public class App implements Runnable{
 		//temp.display("Voulez-vous vous identifier ou enregistrer un nouveau compte ?", Color.BLACK);
 		mainFrame = temp;
 		mainFrame.setVisible(true);
+		
+		
+		// Vue plateau
+		ArrayList<String> players = new ArrayList<>();
+		players.add("Miguel");
+		players.add("Jerôme");
+		players.add("Mélanie");
+		players.add("David");
+		Game game = new Game(10, 3, players, "Partie 1", 20);
+		
+		GameView gameView = new GameView(game);
+		gameView.setSize(new Dimension(1000, 300));
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while (true) {
+					game.setPlayerTurn("Miguel");
+					game.movePlayer(1);
+					try {
+					Thread.sleep(1000);
+					} catch (InterruptedException e) { }
+				}
+			}
+		}).start();
 	}
 
 	@Override
