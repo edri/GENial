@@ -94,7 +94,7 @@ public class Game {
 	}
 
 	public void addPlayer(String name) {
-		// on ajoute la joueur a la liste de joueur
+		// on ajoute le joueur a la liste de joueur
 		players.add(name);
 		// on lie le nouveau joueur a sa position de depart
 		positions.put(name, 0);

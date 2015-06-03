@@ -1,13 +1,26 @@
 package application;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import messages.*;
 import communication.*;
+import gui.*;
 
 public class App implements Runnable{
 	private Game currentGame;
@@ -19,8 +32,12 @@ public class App implements Runnable{
 	private MessageHandler msgHandler;
 	private MessageReader msgReader;
 	private String clientName;
+	private String status;
+	
+	private JFrame mainFrame;
 
 	public App(){
+		status = "connection"; // TODO utile ? A voir plus tard
 		start = false;
 		endGame = false;
 		currentGame = null;
@@ -29,10 +46,19 @@ public class App implements Runnable{
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
+		
+		
+		ConnectionFrame temp = new ConnectionFrame(this, "GENial, connection au serveur", "Adresse IP : ", "Port : ", false);
+		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
+		//temp = new ConnectionFrame(this, "Genial, s'identifier ou s'enregistrer");
+		//temp.display("Voulez-vous vous identifier ou enregistrer un nouveau compte ?", Color.BLACK);
+		mainFrame = temp;
+		mainFrame.setVisible(true);
 	}
 
 	@Override
 	public void run() {
+		/*
 		int choix;
 		String pwd;
 		String addrIP;
@@ -86,7 +112,7 @@ public class App implements Runnable{
 			// recuperation de la liste des parties
 			msgReader.getMessage();
 			success = false;
-			
+
 			// JOIN or CREATE
 			boolean firstTurn = true;
 			while(!success){
@@ -95,7 +121,7 @@ public class App implements Runnable{
 				} else {
 					firstTurn = false;
 				}
-				
+
 				// 2 choix, soit on cree une nouvelle partie, soit on en rejoins une
 				choix = -1;
 				while(choix < 0 || choix > 1){
@@ -111,7 +137,7 @@ public class App implements Runnable{
 					System.out.println("Vous avez decide de rejoindre une partie.");
 					gameName = askString("Veuillez entrer le nom de la partie : ");
 					joinAGame(gameName);
-					
+
 					if (success){ // on a reussi a rejoindre la partie
 						System.out.println("Veuillez attendre que la partie debute.");
 					}
@@ -152,6 +178,7 @@ public class App implements Runnable{
 			System.out.println("Fin du programme.");
 			System.exit(0);
 		}
+		*/
 	}
 
 	private void startGame(){
@@ -215,11 +242,11 @@ public class App implements Runnable{
 		temp = scan.nextLine();
 		return temp;
 	}
-	
+
 	public void setEndGame(boolean b){
 		endGame = b;
 	}
-	
+
 	public void setSuccess(boolean b){
 		success = b;
 	}
@@ -239,7 +266,7 @@ public class App implements Runnable{
 	public void roll(String name) {
 		System.out.println("C'est a " + name + "de lancer les des !");
 		currentGame.setPlayerTurn(name);
-		
+
 		if (name.equals(clientName)) { // roll si c'est le tour du joueur
 			Roll roll = new Roll();
 			roll.accept(msgHandler);
@@ -275,5 +302,9 @@ public class App implements Runnable{
 		// pas implementer car on n'a pas encore de mini-jeu
 		SendResult resultMsg = new SendResult(42);
 		resultMsg.accept(msgHandler);
+	}
+	
+	public String getStatus(){
+		return status;
 	}
 }
