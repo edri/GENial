@@ -13,9 +13,19 @@ public class Game {
 	private String playerTurn;
 	private int maxPlayers;
 	
+	// pas utilise
 	public Game() {
 	}
 	
+	/**
+	 * Constructeur permettant de créer une partie (plateau de jeu), une partie est crée
+	 * uniquement lorsque le jeu se lance (cf classe Lobby pour avant le lancement)
+	 * @param nbCases
+	 * @param difficulty
+	 * @param players
+	 * @param name
+	 * @param maxPlayers
+	 */
 	public Game(int nbCases, int difficulty, ArrayList<String> players, String name, int maxPlayers) {
 		this.nbCases = nbCases;
 		this.players = players;
@@ -23,44 +33,83 @@ public class Game {
 		this.name = name;
 		this.maxPlayers = maxPlayers;
 		
+		// positionne tous les joueurs à la position 0 (départ)
 		for (String player : players)
 		{
 			positions.put(player, 0);
 		}
 	}
 	
+	/**
+	 * Retourne le nom de la partie
+	 * @return name, nom de la partie
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Retourne le nombre max de joueur (A DEPLACER DANS LOBBY)
+	 * @return
+	 */
 	public int getMaxPlayers() {
 		return maxPlayers;
 	}
 
+	/**
+	 * Retourne le nombre de cases du plateau de jeu
+	 * @return nbCases
+	 */
 	public int getNbCases() {
 		return nbCases;
 	}
 
+	/**
+	 * Assigne le nombre de cases fourni au plateau
+	 * @param nbCases, le nombre de cases voulues
+	 */
 	public void setNbCases(int nbCases) {
 		this.nbCases = nbCases;
 	}
 
+	/**
+	 * Retourne la difficulté de la partie
+	 * @return difficulty
+	 */
 	public int getDifficulty() {
 		return difficulty;
 	}
 
+	/**
+	 * Assigne une difficulté au jeu (utilisée lors du lancement des mini-jeux)
+	 * @param difficulty
+	 */
 	public void setDifficulty(int difficulty) {
 		this.difficulty = difficulty;
 	}
 
+	/**
+	 * Retourne la liste des joueurs participants à la partie
+	 * @return
+	 */
 	public ArrayList<String> getPlayers() {
 		return players;
 	}
 
+	/**
+	 * Assigne une liste de joueurs à la partie (normalement pas utilisé)
+	 * @param players
+	 */
 	public void setPlayers(ArrayList<String> players) {
 		this.players = players;
 	}
 
+	/**
+	 * Action - methode appelée par l'application afin de déplacer le joueur
+	 * dont c'est le tour
+	 * @param moveValue
+	 * @return
+	 */
 	public boolean movePlayer(int moveValue)
 	{
 		int newPosition = positions.get(playerTurn) + moveValue;
@@ -78,11 +127,16 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Retourne le nom du joueur ayant gagné la partie (plateau)
+	 * @return
+	 */
 	public String getWinner()
 	{
 		return winner;
 	}
 	
+	// fonction utilisée dans les tests
 	public void showStatus()
 	{
 		System.out.println("Statut de la partie : ");
@@ -93,6 +147,10 @@ public class Game {
 		}
 	}
 
+	/**
+	 * Action - Ajoute un nouveau joueur à la partie (normalement ne sera plus utilisé)
+	 * @param name
+	 */
 	public void addPlayer(String name) {
 		// on ajoute le joueur a la liste de joueur
 		players.add(name);
@@ -100,6 +158,10 @@ public class Game {
 		positions.put(name, 0);
 	}
 	
+	/**
+	 * Action - Retire un joueur de la partie (généralement suite à une déconnexion)
+	 * @param name
+	 */
 	public void removePlayer(String name) {
 		for(int i = 0; i < players.size(); i++){
 			if (players.get(i).equals(name)){
@@ -111,6 +173,10 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Action - Indique le nom du joueur dont c'est le tour
+	 * @param name
+	 */
 	public void setPlayerTurn(String name){
 		playerTurn = name;
 	}
@@ -127,6 +193,10 @@ public class Game {
 		this.positions = positions;
 	}
 	
+	/**
+	 * Action - Assigne au plateau le nom du joueur ayant gagné la partie (plateau)
+	 * @param winner
+	 */
 	public void setWinner(String winner) {
 		this.winner = winner;
 	}
