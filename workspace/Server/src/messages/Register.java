@@ -1,11 +1,9 @@
 package messages;
 
-import communication.MessageHandler;
-
 /**
  * Demande de creation d'un nouveau compte
  */
-public class Register extends Message {
+public class Register {
 	private String name;
 	private String pwd;
 	
@@ -33,10 +31,5 @@ public class Register extends Message {
 
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
-	}
-	
-	@Override
-	public void accept(MessageHandler visitor) {
-		visitor.visit(this);
 	}
 }

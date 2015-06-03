@@ -39,15 +39,16 @@ public class ClientWorker implements Runnable {
 	BufferedReader reader;
 	PrintWriter writer;
 	private Database db;
-	//private static int counterId;
 	private int playerId;
 	private ServerGame myGame;
-	private String playerName = "";
+	private String playerName = "Un joueur inconnu";
+	private Server server;
 
 	public ClientWorker(Socket socket) {
+		server = Server.getInstance(); // Récupère l'instance du serveur
 		this.socket = socket;
 		try {
-			db = Database.getInstance();
+			db = Database.getInstance(); // Récupère l'instance vers la DB
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,11 +59,13 @@ public class ClientWorker implements Runnable {
         return writer;
 	}
 
+	// Envois un message de succès au client
 	private void success() {
 		writer.println(Protocol.CMD_ACCEPT);
 		System.out.println("Serveur retourne : SUCCESS");
 	}
 	
+	// Envois un message de refus au client avec un message
 	private void failure(String reason) {
 		writer.println(Protocol.CMD_REFUSE);
 		try {
@@ -74,6 +77,7 @@ public class ClientWorker implements Runnable {
 		System.out.println("Serveur retourne : REFUSE, " + reason);
 	}
 	
+
 	public String getPlayerName() {
 		return playerName;
 	}
@@ -88,6 +92,7 @@ public class ClientWorker implements Runnable {
 	
 	@Override
 	public void run() {
+		// Initialisation des fluxs
 		try {
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			writer = new PrintWriter(socket.getOutputStream(), true);
@@ -101,7 +106,7 @@ public class ClientWorker implements Runnable {
 			while (!exit && ((command = reader.readLine()) != null)) {
 				System.out.println("Serveur a reçu la commande : " + command);
 				switch (command) {
-					case Protocol.CMD_AUTH:
+					case Protocol.CMD_AUTH: // Je veux me connecter
 						Auth authMsg = JsonObjectMapper.parseJson(reader.readLine(), Auth.class);
 						
 						ResultSet rs = db.auth(authMsg.getName(), authMsg.getPwd());
@@ -110,14 +115,14 @@ public class ClientWorker implements Runnable {
 							playerId = rs.getInt(1);
 							playerName = rs.getString(2);
 							writer.println(Protocol.CMD_GAMES_LIST);
-							writer.println(JsonObjectMapper.toJson(new GamesList(db.fetchGamesList())));
+							writer.println(JsonObjectMapper.toJson(new GamesList(server.getLobbies())));
 						} else {
 							failure("Nom de joueur ou mot de passe incorrect.");
 						}
 						
 						break;
 						
-					case Protocol.CMD_REGISTER:
+					case Protocol.CMD_REGISTER: // Je veux m'enregistrer
 						String line = reader.readLine();
 						Register reg = JsonObjectMapper.parseJson(line, Register.class);
 						
@@ -127,61 +132,70 @@ public class ClientWorker implements Runnable {
 							db.createPlayer(reg.getName(), reg.getPwd());
 							success();
 							writer.println(Protocol.CMD_GAMES_LIST);
-							writer.println(JsonObjectMapper.toJson(new GamesList(db.fetchGamesList())));
+							writer.println(JsonObjectMapper.toJson(new GamesList(server.getLobbies())));
 						}
 						break;
 					
-					case Protocol.CMD_CREATE:
+					case Protocol.CMD_CREATE: // Je veux créer une partie
 						Create createGame = JsonObjectMapper.parseJson(reader.readLine(), Create.class);
-						if(db.gameAlreadyExist()) {
+						if(server.getGames().size() == 1) { // Pour l'instant, on autorise un seul jeu
 							failure("Un jeu a deja ete cree.");
 						} else {
-							db.createGame(playerId, createGame.getName(), createGame.getNbPlayers(), createGame.getDifficulty(), createGame.getNbCases());
-							myGame = new ServerGame(createGame.getNbCases(), createGame.getDifficulty(), new ArrayList<>(Arrays.asList(this)), createGame.getName(), createGame.getNbPlayers());
-							Server.getInstance().addGame(myGame);
+							ServerGame tmp = new ServerGame(createGame.getNbCases(), createGame.getDifficulty(), 
+									new ArrayList<>(Arrays.asList(this)), createGame.getName(), createGame.getNbPlayers());
+							myGame = tmp;
+							server.addGame(tmp);
 							success();
 						}
 						
 						break;
 					
-					case Protocol.CMD_JOIN:
+					case Protocol.CMD_JOIN: // Je veux rejoindre une partie
 						Join joinGame = JsonObjectMapper.parseJson(reader.readLine(), Join.class);
-						if(db.addPlayerToGame(playerId, joinGame.getGameName())) {
-							Server.getInstance().getGames().get(joinGame.getGameName()).addPlayer(playerName, this);
+						if(server.getGames().get(joinGame.getGameName()) == null) {
+							failure("Cette partie n'existe pas !");
+							break;
+						}
+						
+						if(!server.getGames().get(joinGame.getGameName()).isComplete()) { // La partie a encore de la place
+							server.getGames().get(joinGame.getGameName()).addPlayer(playerName, this);
 							success();
 						} else {
 							failure("Il n'y a plus de place dans cette partie.");
 						}
 						break;
 						
-					case Protocol.CMD_REFRESH:
+					case Protocol.CMD_REFRESH: // Je veux raffraichir
 						writer.println(Protocol.CMD_GAMES_LIST);
-						writer.println(JsonObjectMapper.toJson(new GamesList(db.fetchGamesList())));
+						writer.println(JsonObjectMapper.toJson(new GamesList(server.getLobbies())));
 						break;
 						
-                    case Protocol.CMD_START:
+                    case Protocol.CMD_START: // Je démarre la partie
                     	// Démarre le thread de la partie en cours (un ServerGame)
                         new Thread(myGame).start();
                         break;
                         
-                    case Protocol.CMD_ROLL:
+                    case Protocol.CMD_ROLL: // J'ai lancé les dés
                     	writer.println(Protocol.CMD_MVT);
                     	int movement = new Random().nextInt(6) + 1;
                     	writer.println(JsonObjectMapper.toJson(new Mvt(movement)));
-                    	myGame.movePlayer(playerName, movement);
-                    	myGame.setPlayerHasRoll(true);
+                    	synchronized(myGame) {
+                    		myGame.movePlayer(playerName, movement);
+                    		myGame.notify();
+                    	}
                     	break;
 						
-                    case Protocol.CMD_CHOOSE_GAME:
-                    	ChooseGame gameChosen = JsonObjectMapper.parseJson(reader.readLine(), ChooseGame.class);
-                    	myGame.setMiniGameId(gameChosen.getGameId());
-                    	myGame.setMiniGameChosed(true);
+                    case Protocol.CMD_CHOOSE_GAME: // J'ai choisi un mini-jeu
+                    	//ChooseGame gameChosen = JsonObjectMapper.parseJson(reader.readLine(), ChooseGame.class);
+                    	synchronized(myGame) {
+                    		myGame.notify();
+                    	}
                     	break;
-                    case Protocol.SEND_RESULT:
+                    case Protocol.SEND_RESULT: // J'ai fini de jouer, je te transmets mon score
                     	SendResult results = JsonObjectMapper.parseJson(reader.readLine(), SendResult.class);
                     	myGame.addScores(playerName, results.getScore());
                     	break;
-					case Protocol.CMD_QUIT:
+					case Protocol.CMD_QUIT: // Je quitte la partie
 						exit = true;
 						break;
 						
@@ -193,8 +207,10 @@ public class ClientWorker implements Runnable {
 			}
 		} catch (IOException e) {
 			// Un client se déconnecte
+			System.out.println(playerName + " a été déconnecté !");
 			try {
 				socket.close();
+				server.disconnectPlayer(this);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
