@@ -29,9 +29,9 @@ public class Connection {
 		return instance;
 	}
 
-	public boolean connect(String addrIP) throws UnknownHostException, IOException{
-		// connection a un nouveau serveur
-		if (!ip.equals(addrIP)){
+	public boolean connect(String addrIP, int port) throws UnknownHostException, IOException {
+		// verification si on cherche une connection a un nouveau serveur ou sur un nouveau port
+		if (!(ip.equals(addrIP) && port == Settings.serverPort)){
 			// ferme l'ancienne connexion si existante
 			if (!ip.equals("")){
 				disconnect();
@@ -39,10 +39,12 @@ public class Connection {
 
 			// ouvre la nouvelle connection
 			ip = addrIP;
-			socket = new Socket(ip, Settings.serverPort);
+			socket = new Socket(ip, port);
 
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Settings.encoding));
 			out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Settings.encoding));
+			Settings.serverPort = port;
+			Settings.addrIP = addrIP;
 		}
 		return socket == null ? false : !socket.isClosed();
 	}
@@ -59,8 +61,10 @@ public class Connection {
 	}
 
 	public boolean disconnect() throws IOException{
-		// essaie de fermer la connection
-		socket.close();
+		// essaie de fermer la connection si elle existe
+		if (socket != null){
+			socket.close();
+		}
 		return socket == null ? true : !socket.isClosed();
 	}
 

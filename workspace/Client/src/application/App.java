@@ -1,23 +1,15 @@
 package application;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import messages.*;
 import communication.*;
@@ -34,6 +26,7 @@ public class App implements Runnable{
 	private MessageReader msgReader;
 	private String clientName;
 	private String status;
+	private Connection connection;
 	
 	private JFrame mainFrame;
 
@@ -59,6 +52,7 @@ public class App implements Runnable{
 
 	@Override
 	public void run() {
+		/*
 		int choix;
 		String pwd;
 		String addrIP;
@@ -182,7 +176,7 @@ public class App implements Runnable{
 		} catch (IOException e) {
 			System.out.println("Impossible de se connecter au serveur, bye !");
 			System.exit(0);
-		}
+		}*/
 	}
 
 	private void startGame(){
@@ -308,8 +302,46 @@ public class App implements Runnable{
 		SendResult resultMsg = new SendResult(42);
 		resultMsg.accept(msgHandler);
 	}
+	/*
+	 * -----------------------------------------------------
+	 * METHODE POST GUI ------------------------------------
+	 * -----------------------------------------------------
+	 */
 	
 	public String getStatus(){
 		return status;
+	}
+	
+	public void connectToServer(String addrIP, int port) throws UnknownHostException, IOException{
+		connection = Connection.getInstance();
+		if (connection.connect(addrIP, port)){ // connection réussie
+			prepareChoice();
+		} else { // connection echouée
+			((ConnectionFrame) mainFrame).display("Echec de la connexion au serveur.", Color.RED);
+		}
+	}
+	
+	public void prepareChoice(){
+		status = "authOrRegister";
+		mainFrame.setVisible(false);
+		mainFrame = new ConnectionFrame(this, "GENial, s'identifier ou s'enregistrer");
+		((ConnectionFrame)mainFrame).display("Avez-vous deja un compte ou voulez-vous en creer un nouveau ?", Color.BLACK);
+		mainFrame.setVisible(true);
+	}
+	
+	public void prepareAuth(){
+		status = "auth";
+		mainFrame.setVisible(false);
+		mainFrame = new ConnectionFrame(this, "GENial, s'identifier", "Nom d'utilisateur", "Mot de passe", true);
+		((ConnectionFrame)mainFrame).display("Veuillez entrer votre identifiant ainsi que votre mot de passe.", Color.BLACK);
+		mainFrame.setVisible(true);
+	}
+	
+	public void prepareRegistration(){
+		status = "register";
+		mainFrame.setVisible(false);
+		mainFrame = new ConnectionFrame(this, "GENial, s'enregistrer", "Nom d'utilisateur", "Mot de passe", true);
+		((ConnectionFrame)mainFrame).display("Veuillez entrer l'identifiant ainsi que le mot de passe que vous voulez utiliser.", Color.BLACK);
+		mainFrame.setVisible(true);
 	}
 }
