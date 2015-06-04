@@ -1,11 +1,9 @@
 package messages;
 
-import communication.MessageHandler;
-
 /**
  * Indique le nom et le score du joueur ayant gagne le mini-jeu
  */
-public class WinnerGame extends Message {
+public class WinnerGame {
 	private String playerName;
 	private int score;
 	
@@ -33,10 +31,5 @@ public class WinnerGame extends Message {
 
 	public void setScore(int score) {
 		this.score = score;
-	}
-	
-	@Override
-	public void accept(MessageHandler visitor) {
-		visitor.visit(this);
 	}
 }

@@ -1,11 +1,10 @@
 package messages;
 
-import communication.MessageHandler;
 
 /**
  * authentification d'un utilisateur
  */
-public class Auth extends Message {
+public class Auth {
 	private String name;
 	private String hashPwd;
 	
@@ -33,10 +32,5 @@ public class Auth extends Message {
 	
 	public void setPwd(String pwd){
 		hashPwd = pwd;
-	}
-	
-	@Override
-	public void accept(MessageHandler visitor) {
-		visitor.visit(this);
 	}
 }

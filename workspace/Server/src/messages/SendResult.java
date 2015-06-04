@@ -1,11 +1,9 @@
 package messages;
 
-import communication.MessageHandler;
-
 /**
  * Indique au serveur le score obtenu pour le mini-jeu courant
  */
-public class SendResult extends Message {
+public class SendResult {
 	private int score;
 	
 	public SendResult(int score){
@@ -18,10 +16,5 @@ public class SendResult extends Message {
 
 	public void setScore(int score) {
 		this.score = score;
-	}
-	
-	@Override
-	public void accept(MessageHandler visitor) {
-		visitor.visit(this);
 	}
 }

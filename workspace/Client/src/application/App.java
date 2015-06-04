@@ -3,6 +3,7 @@ package application;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +25,7 @@ import gui.*;
 
 public class App implements Runnable{
 	private Game currentGame;
-	private List<Game> games;
+	private List<Lobby> games;
 	private Scanner scan;
 	private boolean start;
 	private boolean endGame;
@@ -42,7 +43,7 @@ public class App implements Runnable{
 		endGame = false;
 		currentGame = null;
 		clientName = "";
-		games = new ArrayList<Game>();
+		games = new ArrayList<Lobby>();
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
@@ -84,7 +85,6 @@ public class App implements Runnable{
 
 	@Override
 	public void run() {
-		/*
 		int choix;
 		String pwd;
 		String addrIP;
@@ -97,114 +97,118 @@ public class App implements Runnable{
 		addrIP = scan.nextLine();
 		connection = Connection.getInstance();
 		// connection au serveur
-		if (connection.connect(addrIP)){
-			msgReader.setStream(Connection.getInstance().getInputStream());
+		try {
+			if (connection.connect(addrIP)){
+				msgReader.setStream(Connection.getInstance().getInputStream());
 
-			// utilisateur doit s'identifier ou creer un nouveau compte
-			choix = -1;
-			while(choix < 0 || choix > 1){
-				System.out.println("Voulez-vous creer un nouveau compte [0] ou vous identifier [1]?");
-				choix = scan.nextInt();
-				scan.nextLine();
-			}
-
-			success = false;
-			// REGISTER
-			if (choix == 0){
-				System.out.println("Vous avez decide de creer un nouveau compte.");
-				while(!success){
-					clientName = askString("Veuillez entrer votre nom");
-					pwd = askString("Veuillez entrer votre mot de passe");//TODO password en dur...
-					register(clientName,pwd);
-					if (!success){
-						System.out.println("Nom d'utilisateur ou mdp incorrecte.");
-					}
-				}		
-
-			} // AUTH
-			else{
-				System.out.println("Vous avez decide de vous identifier aupres du serveur.");
-				while(!success){
-					clientName = askString("Veuillez entrer votre nom");
-					pwd = askString("Veuillez entrer votre mot de passe");
-					auth(clientName,pwd);
-					if (!success){
-						System.out.println("Nom deja utilise ou format incorrecte");
-					}
-				}
-			}
-
-			// utilisateur est maintenant identifie
-			// recuperation de la liste des parties
-			msgReader.getMessage();
-			success = false;
-
-			// JOIN or CREATE
-			boolean firstTurn = true;
-			while(!success){
-				if (!firstTurn){
-					refreshGamesList();
-				} else {
-					firstTurn = false;
-				}
-
-				// 2 choix, soit on cree une nouvelle partie, soit on en rejoins une
+				// utilisateur doit s'identifier ou creer un nouveau compte
 				choix = -1;
 				while(choix < 0 || choix > 1){
-					System.out.println("Voulez-vous creer une partie [0] ou en rejoindre une [1] ?");
+					System.out.println("Voulez-vous creer un nouveau compte [0] ou vous identifier [1]?");
 					choix = scan.nextInt();
+					scan.nextLine();
 				}
-				scan.nextLine();
 
-				String gameName;
 				success = false;
-				// JOIN
-				if (choix == 1){
-					System.out.println("Vous avez decide de rejoindre une partie.");
-					gameName = askString("Veuillez entrer le nom de la partie : ");
-					joinAGame(gameName);
-
-					if (success){ // on a reussi a rejoindre la partie
-						System.out.println("Veuillez attendre que la partie debute.");
-					}
-				} // CREATE 
-				else{
-					System.out.println("Vous avez decide de creer une partie.");
-					// demande au serveur de creer une partie
-					int difficulty = 1;
-					int nbPlayers = 4;
-					int nbSquare = 14;
-					createAGame(clientName, difficulty, nbPlayers, nbSquare);
-
-					// traitement de la reponse
-					if (success){ // partie cree
-						ArrayList<String> players = new ArrayList<String>();
-						players.add(clientName);
-
-						currentGame = new Game(nbSquare, difficulty, players, clientName, nbPlayers);
-						// on debute la partie quand le joueur le decide
-						String command;
-						while(!start){
-							command = askString("Ecrivez 'start' pour debuter la partie : ");
-							start = command.equals("start");
+				// REGISTER
+				if (choix == 0){
+					System.out.println("Vous avez decide de creer un nouveau compte.");
+					while(!success){
+						clientName = askString("Veuillez entrer votre nom");
+						pwd = askString("Veuillez entrer votre mot de passe");//TODO password en dur...
+						register(clientName,pwd);
+						if (!success){
+							System.out.println("Nom d'utilisateur ou mdp incorrecte.");
 						}
-						startGame();
+					}		
+
+				} // AUTH
+				else{
+					System.out.println("Vous avez decide de vous identifier aupres du serveur.");
+					while(!success){
+						clientName = askString("Veuillez entrer votre nom");
+						pwd = askString("Veuillez entrer votre mot de passe");
+						auth(clientName,pwd);
+						if (!success){
+							System.out.println("Nom deja utilise ou format incorrecte");
+						}
 					}
 				}
-			}
 
-			// la partie a (ou va) debuter, le serveur gere l'execution des tours
-			// le client ne fait que reagir aux messages recus jusqu'a la fin du jeu
-			while(!endGame){
+				// utilisateur est maintenant identifie
+				// recuperation de la liste des parties
 				msgReader.getMessage();
-			}
+				success = false;
 
-		} // pas connecte !
-		else {
-			System.out.println("Fin du programme.");
+				// JOIN or CREATE
+				boolean firstTurn = true;
+				while(!success){
+					if (!firstTurn){
+						refreshGamesList();
+					} else {
+						firstTurn = false;
+					}
+
+					// 2 choix, soit on cree une nouvelle partie, soit on en rejoins une
+					choix = -1;
+					while(choix < 0 || choix > 1){
+						System.out.println("Voulez-vous creer une partie [0] ou en rejoindre une [1] ?");
+						choix = scan.nextInt();
+					}
+					scan.nextLine();
+
+					String gameName;
+					success = false;
+					// JOIN
+					if (choix == 1){
+						System.out.println("Vous avez decide de rejoindre une partie.");
+						gameName = askString("Veuillez entrer le nom de la partie : ");
+						joinAGame(gameName);
+
+						if (success){ // on a reussi a rejoindre la partie
+							System.out.println("Veuillez attendre que la partie debute.");
+						}
+					} // CREATE 
+					else{
+						System.out.println("Vous avez decide de creer une partie.");
+						// demande au serveur de creer une partie
+						int difficulty = 1;
+						int nbPlayers = 4;
+						int nbSquare = 14;
+						createAGame(clientName, difficulty, nbPlayers, nbSquare);
+
+						// traitement de la reponse
+						if (success){ // partie cree
+							ArrayList<String> players = new ArrayList<String>();
+							players.add(clientName);
+
+							currentGame = new Game(nbSquare, difficulty, players, clientName, nbPlayers);
+							// on debute la partie quand le joueur le decide
+							String command;
+							while(!start){
+								command = askString("Ecrivez 'start' pour debuter la partie : ");
+								start = command.equals("start");
+							}
+							startGame();
+						}
+					}
+				}
+
+				// la partie a (ou va) debuter, le serveur gere l'execution des tours
+				// le client ne fait que reagir aux messages recus jusqu'a la fin du jeu
+				while(!endGame){
+					msgReader.getMessage();
+				}
+
+			} // pas connecte !
+			else {
+				System.out.println("Fin du programme.");
+				System.exit(0);
+			}
+		} catch (IOException e) {
+			System.out.println("Impossible de se connecter au serveur, bye !");
 			System.exit(0);
 		}
-		*/
 	}
 
 	private void startGame(){
@@ -232,7 +236,8 @@ public class App implements Runnable{
 		// recuperation de la reponse
 		msgReader.getMessage();
 		if (success){
-			currentGame = games.get(0); // TODO choper via le nom
+			Lobby temp = games.get(0); // TODO choper via le nom
+			currentGame = new Game(temp.getNbSquares(), temp.getDifficulty(), temp.getPlayers(), temp.getName(), temp.getMaxPlayers()); 
 			currentGame.addPlayer(clientName); //TODO possibilite de concurrence ici !!!!
 		}
 	}
@@ -277,7 +282,7 @@ public class App implements Runnable{
 		success = b;
 	}
 
-	public void updateGames(List<Game> games){
+	public void updateLobbies(List<Lobby> games){
 		this.games = games;
 	}
 
