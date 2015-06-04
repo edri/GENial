@@ -9,7 +9,9 @@ public class Lobby {
 	private String name;
 	private int maxPlayers;
 
-
+	public Lobby() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public Lobby(int nbSquares, ArrayList<String> players, int difficulty,
 			String name, int maxPlayers) {

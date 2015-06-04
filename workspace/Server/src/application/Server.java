@@ -101,6 +101,9 @@ public class Server {
 	public static void main(String[] args) {
 		// Lance le serveur
 		getInstance();
+		
+		// Essayer de faire fonctionner avec un client avant de plusieurs
+		// Quand le client chosis un jeu, il reçoit null comme réponse alors qu'on lui envoit start_game.
 	}
 	
 	public void addGame(ServerGame game) {
