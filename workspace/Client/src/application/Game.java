@@ -2,8 +2,9 @@ package application;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 
-public class Game {
+public class Game extends Observable {
 	private int nbCases;
 	private int difficulty;
 	private String winner;
@@ -70,6 +71,8 @@ public class Game {
 	 */
 	public void setNbCases(int nbCases) {
 		this.nbCases = nbCases;
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
@@ -86,6 +89,8 @@ public class Game {
 	 */
 	public void setDifficulty(int difficulty) {
 		this.difficulty = difficulty;
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
@@ -102,6 +107,8 @@ public class Game {
 	 */
 	public void setPlayers(ArrayList<String> players) {
 		this.players = players;
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
@@ -113,16 +120,19 @@ public class Game {
 	public boolean movePlayer(int moveValue)
 	{
 		int newPosition = positions.get(playerTurn) + moveValue;
-		
 		if (newPosition >= nbCases)
 		{
-			positions.replace(name, nbCases);
-			winner = name;
+			positions.replace(playerTurn, nbCases);
+			winner = playerTurn;
+			setChanged();
+			notifyObservers();
 			return true;
 		}
 		else
 		{
-			positions.replace(name, newPosition);
+			positions.replace(playerTurn, newPosition);
+			setChanged();
+			notifyObservers();
 			return false;
 		}
 	}
@@ -156,6 +166,8 @@ public class Game {
 		players.add(name);
 		// on lie le nouveau joueur a sa position de depart
 		positions.put(name, 0);
+		setChanged();
+		notifyObservers();
 	}
 	
 	/**
@@ -171,6 +183,8 @@ public class Game {
 				positions.remove(name);
 			}
 		}
+		setChanged();
+		notifyObservers();
 	}
 	
 	/**
@@ -191,6 +205,8 @@ public class Game {
 	
 	public void setPositions(Map<String, Integer> positions) {
 		this.positions = positions;
+		setChanged();
+		notifyObservers();
 	}
 	
 	/**
@@ -199,5 +215,9 @@ public class Game {
 	 */
 	public void setWinner(String winner) {
 		this.winner = winner;
+	}
+
+	public  Map<String, Integer> getPositions() {
+		return positions;
 	}
 }
