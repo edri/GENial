@@ -49,7 +49,7 @@ public class App implements Runnable{
 		mainFrame = temp;
 		mainFrame.setVisible(true);
 		
-		
+		/*
 		// Vue plateau
 		ArrayList<String> players = new ArrayList<>();
 		players.add("Miguel");
@@ -74,6 +74,7 @@ public class App implements Runnable{
 				}
 			}
 		}).start();
+		*/
 	}
 
 	@Override
