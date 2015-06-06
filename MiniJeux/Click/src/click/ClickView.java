@@ -1,5 +1,6 @@
 package click;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,7 +18,7 @@ import javax.swing.Timer;
 
 // Pour le fond
 class ImagePanel extends JComponent {
-   private final Image image;
+   private final Image image;		// Background
    
    public ImagePanel(Image image) {
       this.image = image;
@@ -30,46 +31,10 @@ class ImagePanel extends JComponent {
    }
 }
 
-class SlurpeurView extends JLabel implements MouseListener {
-	
-	//Timer textTimer = new Timer(20, this);
-	
-	// L'image du slurpeur
-	private ImageIcon imgSlurpeur = new ImageIcon(ImageIO.read(new File("slurpeur.png"))); 	
-	// Le modèle
-	private ClickMod modele;
-	
-	public SlurpeurView(ClickMod modele) throws IOException {
-		this.modele = modele;
-	}
-	
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-	}
 
-	@Override
-	public void mouseEntered(MouseEvent e) {	
-	}
 
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-}
 
 
 public class ClickView implements Observer {
@@ -92,13 +57,42 @@ public class ClickView implements Observer {
    	private final JLabel lblScore = new JLabel("Score : 0");
     private final JLabel lblTime = new JLabel("00:30");
     
-	final JLabel lblPoints = new JLabel("+10");
+    // Le boutton qui disparait quand on gagne des points
+	private SoftJLabel lblPlus10;
+	
+	private JLabel lblPoints;
+	private JLabel lblTermine;
+	
+	// Pour les bouttons qui disparaissent
+	private Timer alphaChanger;
   
 	
 	public ClickView(ClickMod modele) throws IOException {
 		
 		this.frame = new JFrame();
 		this.panel = new JPanel();
+		frame.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				modele.startThread();
+			//	slurpeur.moveSlurpeur();
+				slurpeur.moveSlurpeur();
+				System.out.println("Slurper!");
+			}
+		});
 		
 		this.modele = modele;
 		this.modele.addObserver(this);
@@ -108,6 +102,25 @@ public class ClickView implements Observer {
 		this.frame.setResizable(false);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		/*
+		alphaChanger = new Timer(30, new ActionListener() {
+            private float incrementer = -.03f;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               // float newAlpha = lblPoints.getAlpha() + incrementer;
+                if (newAlpha < 0) {
+                    newAlpha = 0;
+                    incrementer = -incrementer;
+                } else if (newAlpha > 1f) {
+                    newAlpha = 1f;
+                    incrementer = -incrementer;
+                }
+                lblPoints.setVisible(false);
+            }
+        });
+        */
+		
 		ImagePanel img = new ImagePanel(ImageIO.read(new File("backgroundBrun.jpg")));
 		this.frame.getContentPane().add(img, null);
 
@@ -116,11 +129,15 @@ public class ClickView implements Observer {
 		
 		this.slurpeurview = new SlurpeurView(modele);
 		
-		lblPoints.setForeground(Color.RED);
-		lblPoints.setFont(new Font("TimeRoman",  Font.BOLD, 40));
-		lblPoints.setBounds(LARGEUR / 2, HAUTEUR / 2, HAUTEUR, 40);
+		lblPoints = new JLabel(new ImageIcon(ImageIO.read(new File("plus10.png"))));		
+		lblPoints.setBounds(0, 0, 700, 700);
 		lblPoints.setVisible(false);
 		img.add(lblPoints);
+		
+		lblTermine = new JLabel(new ImageIcon(ImageIO.read(new File("termine.png"))));		
+		lblTermine.setBounds(0, 0, 700, 700);
+		lblTermine.setVisible(false);
+		img.add(lblTermine);
 		
 		this.imgSlurpeur = new JLabel(new ImageIcon(ImageIO.read(new File("slurpeur.png"))));
 		this.imgSlurpeur.setBounds(slurpeur.getX(), slurpeur.getY(), 50, 50);
@@ -140,6 +157,7 @@ public class ClickView implements Observer {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				System.out.println("+10");
 				lblPoints.setVisible(true);
 				modele.incrementerScore();	
 				try {
@@ -170,11 +188,18 @@ public class ClickView implements Observer {
 		this.frame.setLocationRelativeTo(null);
 	}
 	
+	
+	
 
 	@Override
 	public void update(Observable o, Object arg) {
 		lblScore.setText("Score : " + modele.getScore() + " ");
-		lblTime.setText("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));
+		if(modele.getCurrentLeftSeconds() == 0) {
+			lblScore.setVisible(false);
+			lblTermine.setVisible(true);
+		} else {
+			lblTime.setText("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));	
+		}	
 		imgSlurpeur.setIcon(slurpeur.getImage());
 		imgSlurpeur.setBounds(slurpeur.getX(), slurpeur.getY(), 100, 100);
 	}
