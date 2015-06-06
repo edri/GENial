@@ -30,8 +30,7 @@ public class TwoChoicesPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				app.prepareAuth();
 			}
 		});
 		firstPanel.add(choiceOne);
@@ -42,8 +41,7 @@ public class TwoChoicesPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				app.prepareRegistration();
 			}
 		});
 		secondPanel.add(choiceTwo);

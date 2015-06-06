@@ -87,38 +87,6 @@ public class Database {
 		}
 		return false;
 	}
-
-	public boolean gameAlreadyExist() {
-		try {
-			PreparedStatement sql = conn
-					.prepareStatement("SELECT * FROM game;");
-			if (sql.executeQuery().first()) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public int createGame(int playerId, String name, int nbPlayer, int difficulty,
-			int nbSquare) {
-		try {
-			PreparedStatement sql = conn
-					.prepareStatement("INSERT INTO game(creator, difficulty, squares, max_players, name) VALUES(?, ?, ?, ?, ?)");
-			sql.setInt(1, playerId);
-			sql.setInt(2, difficulty);
-			sql.setInt(3, nbSquare);
-			sql.setInt(4, nbPlayer);
-			sql.setString(5, name);
-			return sql.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return -1;
-	}
 	
 	public Map<Integer, String> getGamesMap() {
 		Map<Integer, String> map = new HashMap<>();
@@ -134,39 +102,6 @@ public class Database {
 			e.printStackTrace();
 		}
 		return map;
-	}
-	
-	public int getMyGameDifficulty(int playerId) {
-		try {
-			PreparedStatement sql = conn
-					.prepareStatement("SELECT difficulty FROM game WHERE creator = ?;");
-			sql.setInt(1, playerId);
-			ResultSet rs = sql.executeQuery();
-			if(rs.next()) {
-				return rs.getInt(1);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return -1;
-	}
-
-	public ArrayList<String> playerInGame(int gameId) throws SQLException {
-		ArrayList<String> players = new ArrayList<>();
-		PreparedStatement sql = conn
-				.prepareStatement("SELECT player FROM player_game WHERE game = ?;");
-		sql.setInt(1, gameId);
-		ResultSet rs = sql.executeQuery();
-		while (rs.next()) {
-			PreparedStatement ssql = conn
-					.prepareStatement("SELECT username FROM player WHERE id = ?;");
-			ssql.setInt(1, rs.getInt(1));
-			ResultSet srs = ssql.executeQuery();
-			srs.next();
-			players.add(srs.getString(1));
-		}
-		return players;
 	}
 
 	public String getPlayerNameFromId(int id) {
@@ -185,24 +120,6 @@ public class Database {
 		return "";
 	}
 	
-	public ArrayList<Game> fetchGamesList() {
-		ArrayList<Game> list = new ArrayList<>();
-		try {
-			PreparedStatement sql = conn
-					.prepareStatement("SELECT id, creator, difficulty, squares, max_players, name FROM game;");
-			ResultSet rs = sql.executeQuery();
-			ArrayList<String> players = new ArrayList<>();
-			while (rs.next()) {
-				players = playerInGame(rs.getInt(1));
-				list.add(new Game(rs.getInt(4), rs.getInt(3), players, rs.getString(6), rs.getInt(5)));
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-
 	public int getPlayerIdFromName(String name) {
 		try {
 			PreparedStatement sql = conn
@@ -217,84 +134,5 @@ public class Database {
 			e.printStackTrace();
 		}
 		return -1;
-	}
-	
-	public int getMaxPlayersInGame(int gameId) {
-		try {
-			PreparedStatement sql = conn
-					.prepareStatement("SELECT max_players FROM game WHERE id = ?;");
-			sql.setInt(1, gameId);
-			ResultSet rs = sql.executeQuery();
-			if(rs.next()) {
-				return rs.getInt(1);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return -1;
-	}
-	
-	public int getNbPlayersInGame(int gameId) {
-		try {
-			PreparedStatement sql = conn
-					.prepareStatement("SELECT count(*) FROM player_game WHERE game = ?;");
-			sql.setInt(1, gameId);
-			ResultSet rs = sql.executeQuery();
-			if(rs.next()) {
-				return rs.getInt(1);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return -1;
-	}
-	
-	// Ajouter un joueur à une partie
-	public boolean addPlayerToGame(int player, String gameName) {
-		try {
-			int game = getGameIdFromName(gameName);
-			if(getNbPlayersInGame(game) >= getMaxPlayersInGame(game))
-				return false;
-			
-			PreparedStatement sql = conn
-					.prepareStatement("INSERT INTO player_game (game, player) VALUES (?, ?)");
-			sql.setInt(1, game);
-			sql.setInt(2, player);
-			sql.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return true;
-	}
-	
-	public int getGameIdFromName(String gameName) {
-		try {
-			PreparedStatement sql = conn
-					.prepareStatement("SELECT id FROM game WHERE name = ?;");
-			sql.setString(1, gameName);
-			ResultSet rs = sql.executeQuery();
-			if(rs.next()) {
-				return rs.getInt(1);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return -1;
-	}
-
-	// Retire un joueur d'une partie
-	public void removePlayerFromGame(int player, int game) {
-		try {
-			PreparedStatement sql = conn
-					.prepareStatement("DELETE FROM player_game WHERE player = ? AND game = ?");
-			sql.setInt(1, player);
-			sql.setInt(2, game);
-			sql.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 }

@@ -2,6 +2,7 @@ package application;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -12,6 +13,7 @@ import messages.Begin;
 import messages.Dice;
 import messages.SelectGame;
 import messages.StartGame;
+import messages.Winner;
 import messages.WinnerGame;
 import protocol.Protocol;
 import tools.JsonObjectMapper;
@@ -27,8 +29,9 @@ public class ServerGame implements Runnable {
 	private String name;
 	private String playerTurn;
 	private int maxPlayers;
-	private int currentPlayerIdx = 0;
-	private int currentGameChooser = 0;
+	private Iterator<String> currentPlayer;
+	private Iterator<String> currentGameChooser;
+	//private int currentGameChooser = 0;
 	private boolean terminated = false;
 	private boolean playerHasRoll;
 	private boolean miniGameChosed = false;
@@ -111,14 +114,25 @@ public class ServerGame implements Runnable {
 	public void setWinner(String winner) {
 		this.winner = winner;
 	}
+	
+	public void sendToOne(ClientWorker who, String... msgs) {
+		for(String msg : msgs)
+			who.getOutputStream().println(msg);
+	}
+	
+	public void sendToAll(String... msgs) {
+		for(ClientWorker player : connections.values()) {
+			sendToOne(player, msgs);
+		}
+	}
 
 	public void movePlayer(String player, int movement) {
 		int newPosition = positions.get(player) + movement;
 		
 		if(newPosition >= nbCases) {
-			connections.get(player).getOutputStream().println(Protocol.CMD_WINNER_GAME);
 			try {
-				connections.get(player).getOutputStream().println(JsonObjectMapper.toJson(new WinnerGame(player, 5)));
+				sendToAll(Protocol.CMD_WINNER, JsonObjectMapper.toJson(new Winner(player)));
+				Thread.currentThread().interrupt();
 			} catch (JsonProcessingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -128,89 +142,106 @@ public class ServerGame implements Runnable {
 		}
 	}
 	
-	private void makeTurn() {
-		currentPlayerIdx = 0;
-		do { 
-			playerHasRoll = false;
-			
-			// Envoi à chaque client qui doit jouer le dé
-			for(ClientWorker player : connections.values()) {
-				player.getOutputStream().println(Protocol.CMD_DICE);
-				try {
-					player.getOutputStream().println(JsonObjectMapper.toJson(new Dice(
-								new ArrayList<ClientWorker>(connections.values()).get(currentPlayerIdx).getPlayerName()
-							)));
-				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			currentPlayerIdx++;
-			
-			// Attente sur le joueur qui repond a l'appel du lancé de dé
-			while(!playerHasRoll);
-			
-		} while(currentPlayerIdx != connections.values().size()); // Tant qu'on a pas fait un tour complet des joueurs
-	}
-	
 	@Override
 	public void run() {
 		// Envoi à chaque client un signal de commencement.
 		for (ClientWorker client : connections.values()) {
 			client.setMyGame(this);
-            client.getOutputStream().println(Protocol.CMD_BEGIN);
             try {
-				client.getOutputStream().println(JsonObjectMapper.toJson(new Begin(difficulty)));
+            	sendToOne(client, Protocol.CMD_BEGIN, JsonObjectMapper.toJson(new Begin(difficulty)));
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
 		
-		// Boucle de jeu, lorsqu'une personne gagne le thread de jeu est stoppé
+		currentGameChooser = connections.keySet().iterator();
+		String gameChooserName;
+		
+		// Boucle de jeu, lorsqu'une personne gagne, le thread de jeu est stoppé
 		while(true) {
-			makeTurn();	// Faire un tour
 			
-			// Envoi du signal de selection du mini-jeu
-			new ArrayList<ClientWorker>(connections.values()).get(currentGameChooser).getOutputStream().println(Protocol.CMD_SELECT_GAME);
-			try {
-				new ArrayList<ClientWorker>(connections.values()).get(currentGameChooser).getOutputStream().println(JsonObjectMapper.toJson(new SelectGame(db.getGamesMap())));
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(currentGameChooser.hasNext()) {
+				gameChooserName = currentGameChooser.next();
+			} else {
+				currentGameChooser = connections.keySet().iterator();
+				gameChooserName = currentGameChooser.next();
+				
 			}
 			
-			// Attente du retour du message pour le mini-jeu
-			while(!miniGameChosed);
+			// === Chaque joueur joue une fois le dé ===
+			currentPlayer = connections.keySet().iterator();
+			
+			for(int i = 0; i < connections.size(); ++i) { 
+				
+				// Envoi à chaque client qui doit jouer le dé
+				try {
+					sendToAll(Protocol.CMD_DICE, JsonObjectMapper.toJson(new Dice(currentPlayer.next())));
+				} catch (JsonProcessingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				synchronized(this) {
+					try {
+						wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}	
+				}
+				
+				if(Thread.currentThread().isInterrupted())
+					break;
+					
+			} 
+			// =======
+			
+			if(Thread.currentThread().isInterrupted())
+				break;
+			
+			// Envoi du signal de selection du mini-jeu
+			try {
+				sendToOne(connections.get(gameChooserName), Protocol.CMD_SELECT_GAME, JsonObjectMapper.toJson(new SelectGame(db.getGamesMap())));
+			} catch (JsonProcessingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+
+			
+			synchronized(this) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			startMiniGame(); // Lancement du mini-jeu
 			while(scores.size() != connections.values().size()); // Tant qu'on a pas reçu tous les scores
 			defineWinner(); // Définition du vainqueur du mini-jeu
-			
-			currentGameChooser++;
-			if(currentGameChooser >= connections.values().size())
-				currentGameChooser = 0;
 		}	
 		
 	}
 	
 	private void defineWinner() {
-		String winnerName = new ArrayList<ClientWorker>(connections.values()).get(0).getPlayerName(); // Vainqueur = 1er
+		Iterator<String> iterPlayers = connections.keySet().iterator();
+		String winnerName = iterPlayers.next(); // Vainqueur = temporairement 1er
+		String playerNameTmp;
 		
-		// Parcours des autres et remplacement si y a un meilleur
+		// Parcours des autres et remplacement si il y a un meilleur
 		for(int i = 1; i < connections.values().size(); ++i) {
-			if(scores.get(new ArrayList<ClientWorker>(connections.values()).get(i).getPlayerName()) > scores.get(winnerName))
-				winnerName = new ArrayList<ClientWorker>(connections.values()).get(i).getPlayerName();
+			playerNameTmp = iterPlayers.next();
+			if(scores.get(playerNameTmp) > scores.get(winnerName))
+				winnerName = playerNameTmp;
 		}
 		
-		// Envoi à tous les joueurs le vainqueur
-		for(ClientWorker player : connections.values()) {
-			player.getOutputStream().println(Protocol.CMD_WINNER);
-			try {
-				player.getOutputStream().println(JsonObjectMapper.toJson(new WinnerGame(winnerName, scores.get(winnerName))));
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		// Envoi à tous les joueurs le vainqueur du mini-jeu
+		try {
+			sendToAll(Protocol.CMD_WINNER_GAME, JsonObjectMapper.toJson(new WinnerGame(winnerName, scores.get(winnerName))));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -231,13 +262,29 @@ public class ServerGame implements Runnable {
 	}
 	
 	public void startMiniGame() {
-		for(ClientWorker player : connections.values()) {
-			player.getOutputStream().println(Protocol.CMD_START_GAME);
-			try {
-				player.getOutputStream().println(JsonObjectMapper.toJson(new StartGame(miniGameId, new Random().nextInt())));
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		int seed = new Random().nextInt();
+		try {
+			sendToAll(Protocol.CMD_START_GAME, JsonObjectMapper.toJson(new StartGame(miniGameId, seed)));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public Map<String, ClientWorker> getConnections() {
+		return connections;
+	}
+	
+	public boolean isComplete() {
+		return connections.size() >= maxPlayers;
+	}
+	
+	public void disconnectPlayer(String name) {
+		if(connections.remove(name) != null) {
+			System.out.println("Y a un blaireau qui s'est déconnecté de la partie ...");
+			if(connections.isEmpty()) {
+				Server.getInstance().deleteGame(this);
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

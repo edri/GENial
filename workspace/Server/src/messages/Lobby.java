@@ -1,14 +1,14 @@
-package application;
+package messages;
 
 import java.util.ArrayList;
 
 public class Lobby {
 	private int nbSquares;
 	private ArrayList<String> players;
-	private int difficulty;
-	private String name;
-	private int maxPlayers;
-
+	int difficulty;
+	String name;
+	int maxPlayers;
+	
 	public Lobby() {
 		// TODO Auto-generated constructor stub
 	}
@@ -62,5 +62,5 @@ public class Lobby {
 		this.maxPlayers = maxPlayers;
 	}
 
-
+	
 }

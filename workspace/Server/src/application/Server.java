@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 
+import messages.Lobby;
 import database.Database;
 
 /**
@@ -100,14 +101,38 @@ public class Server {
 	public static void main(String[] args) {
 		// Lance le serveur
 		getInstance();
+		
+		// Essayer de faire fonctionner avec un client avant de plusieurs
+		// Quand le client chosis un jeu, il reçoit null comme réponse alors qu'on lui envoit start_game.
+	}
+	
+	public void addGame(ServerGame game) {
+		games.put(game.getName(), game);
+	}
+	
+	public void deleteGame(ServerGame game) {
+		games.remove(game.getName());
+	}
+	
+	public void disconnectPlayer(ClientWorker player) {
+		clients.remove(player);
+		for(ServerGame game : games.values()) {
+			game.disconnectPlayer(player.getPlayerName());
+		}
 	}
 	
 	public Map<String, ServerGame> getGames() {
 		return games;
 	}
 	
-	public void addGame(ServerGame game) {
-		games.put(game.getName(), game);
+	public ArrayList<Lobby> getLobbies() {
+		ArrayList<Lobby> lobbies = new ArrayList<>();
+		for(ServerGame game : games.values()) {
+			lobbies.add(new Lobby(game.getNbCases(), 
+					new ArrayList<String>( game.getConnections().keySet() ), 
+					game.getDifficulty(), game.getName(), game.getMaxPlayers()));
+		}
+		return lobbies;
 	}
 
 }

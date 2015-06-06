@@ -1,11 +1,9 @@
 package messages;
 
-import communication.MessageHandler;
-
 /**
  * Indique aux joueurs que le mini-jeu peut commencer
  */
-public class StartGame extends Message {
+public class StartGame {
 	private int gameId;
 	private int seed;
 	
@@ -28,10 +26,5 @@ public class StartGame extends Message {
 
 	public void setSeed(int seed) {
 		this.seed = seed;
-	}
-	
-	@Override
-	public void accept(MessageHandler visitor) {
-		visitor.visit(this);
 	}
 }
