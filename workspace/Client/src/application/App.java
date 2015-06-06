@@ -3,6 +3,7 @@ package application;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,12 +20,16 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import messages.*;
+import miniJeux.MiniJeu;
+import miniJeux.challenger.Challenger;
+import miniJeux.letterHero.LetterHero;
 import communication.*;
 import gui.*;
 
 public class App implements Runnable{
 	private Game currentGame;
 	private List<Game> games;
+	private ArrayList<MiniJeu> listMiniJeux;
 	private Scanner scan;
 	private boolean start;
 	private boolean endGame;
@@ -43,10 +48,13 @@ public class App implements Runnable{
 		currentGame = null;
 		clientName = "";
 		games = new ArrayList<Game>();
+		listMiniJeux = new ArrayList<>();
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
 		
+		listMiniJeux.add(new LetterHero(this));
+		listMiniJeux.add(new Challenger(this));
 		
 		ConnectionFrame temp = new ConnectionFrame(this, "GENial, connection au serveur", "Adresse IP : ", "Port : ", false);
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
@@ -299,8 +307,19 @@ public class App implements Runnable{
 
 	public void startGame(int gameId, int seed) {
 		System.out.println("Je dois commencer le jeu dont l'id est " + gameId + " avec un seed de " + seed + ".");
-		// pas implementer car on n'a pas encore de mini-jeu
-		SendResult resultMsg = new SendResult(42);
+		
+		try {
+			listMiniJeux.get(gameId).start(2, seed);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendScore(int score) {
+		System.out.println("J'ai reçu le score de l'utilisateur : " + score + ".");
+		
+		SendResult resultMsg = new SendResult(score);
 		resultMsg.accept(msgHandler);
 	}
 	
