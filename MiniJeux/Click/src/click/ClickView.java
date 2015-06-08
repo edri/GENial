@@ -56,6 +56,7 @@ public class ClickView implements Observer {
    	// Les infos sur le jeu
    	private final JLabel lblScore = new JLabel("Score : 0");
     private final JLabel lblTime = new JLabel("00:30");
+   	private final JLabel lblCommencer = new JLabel("<html><span><div align = center>Appuyez sur une touche pour commencer !</div></span></html>");
     
     // Le boutton qui disparait quand on gagne des points
 	private SoftJLabel lblPlus10;
@@ -89,6 +90,7 @@ public class ClickView implements Observer {
 			public void keyPressed(KeyEvent e) {
 				modele.startThread();
 			//	slurpeur.moveSlurpeur();
+				lblCommencer.setVisible(false);
 				slurpeur.moveSlurpeur();
 				System.out.println("Slurper!");
 			}
@@ -124,7 +126,7 @@ public class ClickView implements Observer {
 		ImagePanel img = new ImagePanel(ImageIO.read(new File("backgroundBrun.jpg")));
 		this.frame.getContentPane().add(img, null);
 
-		this.slurpeur = Slurpeur.getInstance();
+		this.slurpeur = Slurpeur.getInstance(modele.getDifficulty());
 		this.slurpeur.addObserver(this);
 		
 		this.slurpeurview = new SlurpeurView(modele);
@@ -170,6 +172,13 @@ public class ClickView implements Observer {
 		});
 		
 		img.add(this.imgSlurpeur);
+		
+		lblCommencer.setForeground(Color.BLACK);
+		lblCommencer.setFont(new Font("TimeRoman",  Font.BOLD, 40));
+		lblCommencer.setBounds(0, 0, HAUTEUR, LARGEUR);
+		lblCommencer.setAlignmentX(JLabel.CENTER);
+		//lblCommencer.setHorizontalAlignment(frame.CENTER_ALIGNMENT);
+		img.add(lblCommencer);
 		
 		lblScore.setForeground(Color.BLACK);
 		lblScore.setFont(new Font("TimeRoman",  Font.BOLD, 25));

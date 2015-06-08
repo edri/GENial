@@ -13,7 +13,7 @@ import javax.swing.JComponent;
 
 public class ClickMod extends Observable {
 	
-	private final int difficulty;
+	private int difficulty;
 	private final int seed;
 	
 	// Pour le temps
@@ -31,7 +31,7 @@ public class ClickMod extends Observable {
 		this.difficulty = difficulty;
 		this.seed = seed;
 		
-		this.slurpeur = Slurpeur.getInstance();
+		this.slurpeur = Slurpeur.getInstance(difficulty);
 
 	    threadTime = (4 - difficulty);
 		activity = new Thread();
@@ -48,8 +48,13 @@ public class ClickMod extends Observable {
 		};
 	}
 	
+	public int getDifficulty() {
+		return this.difficulty;
+	}
+	
 	public void start(int difficulty, int seed) throws InterruptedException {
 		this.slurpeur.run();
+		this.difficulty = difficulty;
 	}
 	
 	public int getScore() {
