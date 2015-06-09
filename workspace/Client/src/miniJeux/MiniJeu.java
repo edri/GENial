@@ -18,6 +18,8 @@ public abstract class MiniJeu {
 	
 	public void sendScore(int score)
 	{
-		//App.sendScore(score);
+		app.sendScore(score);
 	}
+	
+	public abstract void finish();
 }

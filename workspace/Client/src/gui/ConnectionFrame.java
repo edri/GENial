@@ -45,8 +45,6 @@ public class ConnectionFrame extends JFrame {
 		display.setSize(new Dimension(300,80));
 		display.setLocation(250, 400);
 		display.setEditable(false);
-		//display.setLineWrap(true);
-		//display.setWrapStyleWord(true);
 		display.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		// truc kikoo affichage swing style windows
@@ -62,6 +60,7 @@ public class ConnectionFrame extends JFrame {
 			e.printStackTrace();
 		}
 		SwingUtilities.updateComponentTreeUI(this);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
 	/**

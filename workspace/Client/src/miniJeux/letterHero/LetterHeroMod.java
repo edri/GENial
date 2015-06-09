@@ -89,23 +89,23 @@ public class LetterHeroMod extends Observable implements Runnable
    
    public void startThread() throws LineUnavailableException, UnsupportedAudioFileException, IOException
    {
-      Clip music = AudioSystem.getClip();
+      /*Clip music = AudioSystem.getClip();
       AudioInputStream inputStream = AudioSystem.getAudioInputStream (LetterHeroMod.class.getResourceAsStream("music.wav"));
       music.open(inputStream);
-      music.start(); 
+      music.start(); */
       
       if (!activity.isAlive())
          activity.start();
       
       timer.scheduleAtFixedRate(task, 1000, 1000);
    }
-
+   
    @Override
    public void run()
    {
       while (running)
       {
-         try {Thread.sleep(threadTime);}catch(InterruptedException e) {}         
+         try {Thread.sleep(threadTime);} catch(InterruptedException e) {}         
          move();
       }
       

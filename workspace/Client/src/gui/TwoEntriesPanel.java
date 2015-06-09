@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.UnknownHostException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -17,6 +19,7 @@ import application.App;
 
 public class TwoEntriesPanel extends JPanel {
 	private ConnectionFrame mainFrame;
+	
 	private JPanel fieldsPanel;
 	private JPanel mainPanel;
 
@@ -64,8 +67,7 @@ public class TwoEntriesPanel extends JPanel {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					// app.backToChoice();
+					app.prepareChoice();
 				}
 			});
 			buttonPanel.add(backButton);
@@ -78,7 +80,24 @@ public class TwoEntriesPanel extends JPanel {
 				String status = app.getStatus();
 				switch(status){
 				case "connection":
-					mainFrame.display("Vous voulez vous connecter au serveur!", Color.RED);
+					try {
+						app.connectToServer(firstTextField.getText(), Integer.parseInt(secondTextField.getText()));
+					} catch (NumberFormatException e1) {
+						mainFrame.display("Format du port incorrect (doit etre un entier positif).", Color.RED);
+						//e1.printStackTrace();
+					} catch (UnknownHostException e1) {
+						mainFrame.display("Adresse inconnue.", Color.RED);
+						//e1.printStackTrace();
+					} catch (IOException e1) {
+						mainFrame.display("Une erreur est survenue, vous avez ete deconnecte.", Color.RED);
+						//e1.printStackTrace();
+					}
+					break;
+				case "auth":
+					System.out.println("AUTH");
+					break;
+				case "register":
+					System.out.println("REGISTER");
 					break;
 				default:
 					mainFrame.display("Erreur status inconnu...", Color.RED);

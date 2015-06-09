@@ -1,30 +1,27 @@
 package application;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import messages.*;
+import miniJeux.MiniJeu;
+import miniJeux.challenger.Challenger;
+import miniJeux.letterHero.LetterHero;
 import communication.*;
 import gui.*;
 
 public class App implements Runnable{
 	private Game currentGame;
+	private ArrayList<MiniJeu> listMiniJeux;
 	private List<Lobby> games;
 	private Scanner scan;
 	private boolean start;
@@ -34,6 +31,7 @@ public class App implements Runnable{
 	private MessageReader msgReader;
 	private String clientName;
 	private String status;
+	private Connection connection;
 	
 	private JFrame mainFrame;
 
@@ -44,10 +42,13 @@ public class App implements Runnable{
 		currentGame = null;
 		clientName = "";
 		games = new ArrayList<Lobby>();
+		listMiniJeux = new ArrayList<>();
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
 		
+		listMiniJeux.add(new LetterHero(this));
+		listMiniJeux.add(new Challenger(this));
 		
 		ConnectionFrame temp = new ConnectionFrame(this, "GENial, connection au serveur", "Adresse IP : ", "Port : ", false);
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
@@ -55,10 +56,38 @@ public class App implements Runnable{
 		//temp.display("Voulez-vous vous identifier ou enregistrer un nouveau compte ?", Color.BLACK);
 		mainFrame = temp;
 		mainFrame.setVisible(true);
+		
+		/*
+		// Vue plateau
+		ArrayList<String> players = new ArrayList<>();
+		players.add("Miguel");
+		players.add("Jerôme");
+		players.add("Mélanie");
+		players.add("David");
+		Game game = new Game(10, 3, players, "Partie 1", 20);
+		
+		GameView gameView = new GameView(game);
+		gameView.setSize(new Dimension(1000, 300));
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while (true) {
+					game.setPlayerTurn("Miguel");
+					game.movePlayer(1);
+					try {
+					Thread.sleep(1000);
+					} catch (InterruptedException e) { }
+				}
+			}
+		}).start();
+		*/
 	}
 
 	@Override
 	public void run() {
+		/*
 		int choix;
 		String pwd;
 		String addrIP;
@@ -182,7 +211,7 @@ public class App implements Runnable{
 		} catch (IOException e) {
 			System.out.println("Impossible de se connecter au serveur, bye !");
 			System.exit(0);
-		}
+		}*/
 	}
 
 	private void startGame(){
@@ -304,12 +333,61 @@ public class App implements Runnable{
 
 	public void startGame(int gameId, int seed) {
 		System.out.println("Je dois commencer le jeu dont l'id est " + gameId + " avec un seed de " + seed + ".");
-		// pas implementer car on n'a pas encore de mini-jeu
-		SendResult resultMsg = new SendResult(42);
+		
+		try {
+			listMiniJeux.get(gameId).start(2, seed);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendScore(int score) {
+		System.out.println("J'ai reçu le score de l'utilisateur : " + score + ".");
+		
+		SendResult resultMsg = new SendResult(score);
 		resultMsg.accept(msgHandler);
 	}
+	/*
+	 * -----------------------------------------------------
+	 * METHODE POST GUI ------------------------------------
+	 * -----------------------------------------------------
+	 */
 	
 	public String getStatus(){
 		return status;
+	}
+	
+	public void connectToServer(String addrIP, int port) throws UnknownHostException, IOException{
+		connection = Connection.getInstance();
+		if (connection.connect(addrIP, port)){ // connection réussie
+			prepareChoice();
+		} else { // connection echouée
+			((ConnectionFrame) mainFrame).display("Echec de la connexion au serveur.", Color.RED);
+		}
+	}
+	
+	public void prepareChoice(){
+		status = "authOrRegister";
+		mainFrame.setVisible(false);
+		mainFrame = new ConnectionFrame(this, "GENial, s'identifier ou s'enregistrer");
+		((ConnectionFrame)mainFrame).display("Avez-vous deja un compte ou voulez-vous en creer un nouveau ?", Color.BLACK);
+		mainFrame.setVisible(true);
+	}
+	
+	public void prepareAuth(){
+		status = "auth";
+		mainFrame.setVisible(false);
+		mainFrame = new ConnectionFrame(this, "GENial, s'identifier", "Nom d'utilisateur", "Mot de passe", true);
+		((ConnectionFrame)mainFrame).display("Veuillez entrer votre identifiant ainsi que votre mot de passe.", Color.BLACK);
+		mainFrame.setVisible(true);
+	}
+	
+	public void prepareRegistration(){
+		status = "register";
+		mainFrame.setVisible(false);
+		mainFrame = new ConnectionFrame(this, "GENial, s'enregistrer", "Nom d'utilisateur", "Mot de passe", true);
+		((ConnectionFrame)mainFrame).display("Veuillez entrer l'identifiant ainsi que le mot de passe que vous voulez utiliser.", Color.BLACK);
+		mainFrame.setVisible(true);
 	}
 }
