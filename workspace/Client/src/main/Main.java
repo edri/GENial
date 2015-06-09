@@ -17,7 +17,7 @@ public class Main {
 		mainThread.start();
 		
 		
-		/* truc de Miguel
+		/*truc de Miguel
 		boolean gameFinished = false;
 		Random rand = new Random();
 		ArrayList<String> players = new ArrayList<String>();
@@ -44,7 +44,7 @@ public class Main {
 		}
 		
 		System.out.println();
-		System.out.println(game.getWinner() + " a gagné la partie !");
-		*/
+		System.out.println(game.getWinner() + " a gagné la partie !");*/
+		
 	}
 }
