@@ -1,4 +1,4 @@
-package miniJeux.letterHero;
+package miniJeux.challenger;
 
 import java.io.IOException;
 import java.util.Observable;
@@ -7,12 +7,12 @@ import java.util.Observer;
 import application.App;
 import miniJeux.MiniJeu;
 
-public class LetterHero extends MiniJeu implements Observer {
+public class Challenger extends MiniJeu implements Observer {
 	private boolean isModelInitialized;
-	private LetterHeroMod modele;
-	private LetterHeroView view;
+	private ChallengerMod modele;
+	private ChallengerView view;
 	
-	public LetterHero(App app)
+	public Challenger(App app)
 	{
 		super(app);
 		isModelInitialized = false;
@@ -20,9 +20,9 @@ public class LetterHero extends MiniJeu implements Observer {
 	
 	public void start(int difficulty, int seed) throws IOException
 	{
-		modele = new LetterHeroMod(difficulty, seed);
+		modele = new ChallengerMod(difficulty, seed);
 		modele.addObserver(this);
-		view = new LetterHeroView(modele);
+		view = new ChallengerView(modele);
 		isModelInitialized = true;
 	}
 

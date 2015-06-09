@@ -76,10 +76,10 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
       setResizable(false);
       setLocation(700, 300);
-      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       addKeyListener(this);
       
-      ImagePanel img = new ImagePanel(ImageIO.read(new File("images/background.png")));
+      ImagePanel img = new ImagePanel(ImageIO.read(new File("images/LetterHero/background.png")));
       img.setLayout(null);
       setContentPane(img);
       
@@ -101,14 +101,14 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       lblStartGame.setBounds(0, 250, LARGEUR, 50);
       img.add(lblStartGame);
       
-      lblEndGame = new JLabel(new ImageIcon(ImageIO.read(new File("images/finish.png"))), JLabel.CENTER);
+      lblEndGame = new JLabel(new ImageIcon(ImageIO.read(new File("images/LetterHero/finish.png"))), JLabel.CENTER);
       lblEndGame.setBounds(0, 250, LARGEUR, 80);
       lblEndGame.setVisible(false);
       img.add(lblEndGame);
       
       for (int i = 0; i < flames.length; ++i)
       {
-         flames[i] = new JLabel(new ImageIcon(ImageIO.read(new File("images/flame" + (i + 1) + ".png"))));
+         flames[i] = new JLabel(new ImageIcon(ImageIO.read(new File("images/LetterHero/flame" + (i + 1) + ".png"))));
          flames[i].setBounds(modele.getXPosition(i), modele.getYPosition(i), SIZE_FLAMES, SIZE_FLAMES);
          img.add(flames[i]);
          

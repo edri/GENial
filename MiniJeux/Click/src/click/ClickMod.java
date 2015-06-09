@@ -11,218 +11,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 
-class Slurpeur extends Observable implements Runnable {
-
-	enum Directions {NORD, SUD, EST, OUEST};
-	Directions direction;
-	
-	ImageIcon imgN = new ImageIcon("slurpeurN.png");
-	ImageIcon imgS = new ImageIcon("slurpeurS.png");
-	ImageIcon imgE = new ImageIcon("slurpeurE.png");
-	ImageIcon imgO = new ImageIcon("slurpeurO.png");
-	
-	private int posX;		// Position x
-	private int posY;		// Position y
-	
-	public static Slurpeur instance;
-	
-	private Slurpeur () throws IOException {
-		this.posX = 100;
-		this.posY = 100;
-	}
-	
-	public static Slurpeur getInstance() {
-		if (instance == null) {
-			try {
-				instance = new Slurpeur();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return instance;
-	}
-	
-	public int getX() {
-		return this.posX;
-	}
-	
-	public int getY() {
-		return this.posY;
-	}
-	
-	public ImageIcon getImage() {
-		switch (this.direction) {
-		case NORD:
-			return imgN;
-		case SUD:
-			return imgS;
-		case EST:
-			return imgE;
-		case OUEST:
-			return imgO;
-		default: 
-			return null;
-		}
-	}
-	
-	public void move(Directions direction) {
-		switch (direction) {
-		case NORD:
-			this.posY -= 1;
-			if(posY <= -50) {
-				posY = 700;
-			}
-			this.setChanged();
-			this.notifyObservers();
-			break;
-		case SUD:
-			this.posY += 1;
-			if (posY > 700) {
-				posY = -50;
-			}
-			this.setChanged();
-			this.notifyObservers();
-			break;
-		case EST:
-			this.posX += 1;
-			if (posX > 700) {
-				posX = -50;
-			}
-			this.setChanged();
-			this.notifyObservers();
-			break;
-		case OUEST:
-			this.posX -= 1;
-			if (posX < -50) {
-				posX = 700;
-			}
-			this.setChanged();
-			this.notifyObservers();
-			break;
-		default:
-			break;
-		}
-	}
-
-	
-	public void jump() throws InterruptedException {
-			Random direction = new Random();		
-			Random pas = new Random();
-			
-			Directions ancienneDirection = this.direction;
-			int nouvelleDirection = direction.nextInt(4);
-			
-			int nbDePas = pas.nextInt(150) + 100;
-			
-			Thread.sleep(30);
-			switch (nouvelleDirection) {
-			case (0):			// Nord
-				this.direction = Directions.NORD;
-				for (int i = 0; i < nbDePas; ++i) {
-					this.posY -= 1;
-					if(this.posY < 0){
-						posY = 700;
-					}
-					this.setChanged();
-					this.notifyObservers();
-				}
-				break;
-			case(1):			// Sud
-				this.direction = Directions.SUD;
-				for (int i = 0; i < nbDePas; ++i) {
-					this.posY += 1;
-					if(posY > 700) {
-						posY = 0;
-					}
-					this.setChanged();
-					this.notifyObservers();
-				}
-				break;
-			case(2):			// Est
-				this.direction = Directions.EST;
-				for (int i = 0; i < nbDePas; ++i) {
-					this.posX += 1;
-					if(posX > 700) {
-						posX = 0;
-					}
-					this.setChanged();
-					this.notifyObservers();
-				}
-				break;
-			case(3):				// Ouest
-				this.direction = Directions.OUEST;
-				for (int i = 0; i < nbDePas; ++i) {
-					this.posX -= 1;
-					if(posX < 0) {
-						posX = 700;
-					}
-					this.setChanged();
-					this.notifyObservers();
-				}
-				break;
-			}	
-			this.direction = ancienneDirection;
-			this.setChanged();
-			this.notifyObservers();	
-	} 
-	
-	
-	/**
-	 * 
-	 */
-	public void run() {
-		while (true) {
-		   	 // Choisir une direction
-	   	 	Random direction = new Random();
-			 Directions nouvelleDirection;
-
-			 switch(direction.nextInt(4)) {
-			 case 0:
-				 nouvelleDirection = Directions.NORD;
-				 this.direction = Directions.NORD;
-				 break;
-			 case 1:
-				 nouvelleDirection = Directions.SUD;
-				 this.direction = Directions.SUD;
-				 break;
-			 case 2:
-				 nouvelleDirection = Directions.EST;
-				 this.direction = Directions.EST;
-				 break;
-			 case 3:
-				 nouvelleDirection = Directions.OUEST;
-				 this.direction = Directions.OUEST;
-				 break;
-			 default:
-				 nouvelleDirection = Directions.NORD;
-				 this.direction = Directions.NORD;
-				 break;
-			 }
-			 
-			for (int i = 0; i < new Random().nextInt(200) + 100; ++i) {
-				try {
-					Thread.sleep(4);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				move(nouvelleDirection);
-			}
-		
-		}
-			
-	}
- 	
-}
-
-
-/**
- * 
- * @author Mel
- *
- */
 public class ClickMod extends Observable {
 	
-	private final int difficulty;
+	private int difficulty;
 	private final int seed;
 	
 	// Pour le temps
@@ -231,7 +22,7 @@ public class ClickMod extends Observable {
     private final Thread activity;
     
     private TimerTask task;
-    private int currentLeftSeconds = 5;
+    private int currentLeftSeconds = 30;
 	
 	private Slurpeur slurpeur;	// La petite bête sur laquelle il faut cliquer
 	private int score = 0;		// Score du joueur
@@ -240,7 +31,7 @@ public class ClickMod extends Observable {
 		this.difficulty = difficulty;
 		this.seed = seed;
 		
-		this.slurpeur = Slurpeur.getInstance();
+		this.slurpeur = Slurpeur.getInstance(difficulty);
 
 	    threadTime = (4 - difficulty);
 		activity = new Thread();
@@ -250,14 +41,20 @@ public class ClickMod extends Observable {
 	         public void run() {
 	            if (--currentLeftSeconds == -1)
 	            {
-	               System.exit(0);
+	            
+	               System.exit(0); // A changer pour que l'appli ne se ferme pas sauvagement
 	            }
 	         }
 		};
 	}
 	
+	public int getDifficulty() {
+		return this.difficulty;
+	}
+	
 	public void start(int difficulty, int seed) throws InterruptedException {
 		this.slurpeur.run();
+		this.difficulty = difficulty;
 	}
 	
 	public int getScore() {
@@ -274,10 +71,11 @@ public class ClickMod extends Observable {
 	}
 	
 	
-	 public void startThread()
-	   {      
-	      if (!activity.isAlive())
-	         activity.start();	      
-	      timer.scheduleAtFixedRate(task, 0, 1000);
-	   }
+   public void startThread() {      
+      if (!activity.isAlive()) {
+         activity.start();
+      }   
+      timer.scheduleAtFixedRate(task, 0, 1000);
+   }
+   
 }
