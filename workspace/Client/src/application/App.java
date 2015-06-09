@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
+import settings.Settings;
 import messages.*;
 import communication.*;
 import gui.*;
@@ -27,8 +28,8 @@ public class App implements Runnable{
 	private String clientName;
 	private String status;
 	private Connection connection;
-	
-	private JFrame mainFrame;
+
+	private AppFrame mainFrame;
 
 	public App(){
 		status = "connection"; // TODO utile ? A voir plus tard
@@ -40,15 +41,13 @@ public class App implements Runnable{
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
-		
-		
+
+
 		ConnectionFrame temp = new ConnectionFrame(this, "GENial, connection au serveur", "Adresse IP : ", "Port : ", false);
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
-		//temp = new ConnectionFrame(this, "Genial, s'identifier ou s'enregistrer");
-		//temp.display("Voulez-vous vous identifier ou enregistrer un nouveau compte ?", Color.BLACK);
 		mainFrame = temp;
 		mainFrame.setVisible(true);
-		
+
 		/*
 		// Vue plateau
 		ArrayList<String> players = new ArrayList<>();
@@ -57,12 +56,12 @@ public class App implements Runnable{
 		players.add("Mélanie");
 		players.add("David");
 		Game game = new Game(10, 3, players, "Partie 1", 20);
-		
+
 		GameView gameView = new GameView(game);
 		gameView.setSize(new Dimension(1000, 300));
-		
+
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				while (true) {
@@ -74,7 +73,7 @@ public class App implements Runnable{
 				}
 			}
 		}).start();
-		*/
+		 */
 	}
 
 	@Override
@@ -214,53 +213,7 @@ public class App implements Runnable{
 		msgReader.getMessage();
 	}
 
-	private void createAGame(String gameName, int diff, int nbPlayers, int nbSquare){
-		// envoi du message
-		Create createMsg = new Create(gameName, nbPlayers, diff, nbSquare);
-		createMsg.accept(msgHandler);
 
-		// recuperation de la reponse
-		success = false;
-		msgReader.getMessage();
-	}
-
-	private void joinAGame(String gameName){
-		// envoi du message
-		Join joinMsg = new Join(gameName);
-		joinMsg.accept(msgHandler);
-		// recuperation de la reponse
-		msgReader.getMessage();
-		if (success){
-			Lobby temp = games.get(0); // TODO choper via le nom
-			currentGame = new Game(temp.getNbSquares(), temp.getDifficulty(), temp.getPlayers(), temp.getName(), temp.getMaxPlayers()); 
-			currentGame.addPlayer(clientName); //TODO possibilite de concurrence ici !!!!
-		}
-	}
-
-	private void refreshGamesList(){
-		// envoi du message
-		Refresh refreshMsg = new Refresh();
-		refreshMsg.accept(msgHandler);
-		// recuperation de la reponse
-		msgReader.getMessage();
-	}
-
-	private void auth(String name, String pwd){
-		// envoi du message
-		Auth authMsg = new Auth(name, pwd);
-		authMsg.accept(msgHandler);
-		// recuperation de la reponse
-		msgReader.getMessage();
-	}
-
-	private void register(String name, String pwd){
-		// envoi du message
-		Register registerMsg = new Register(name, pwd);
-		registerMsg.accept(msgHandler);
-
-		// recupereation de la reponse
-		msgReader.getMessage();
-	}
 
 	private String askString(String msg){
 		String temp;
@@ -275,10 +228,6 @@ public class App implements Runnable{
 
 	public void setSuccess(boolean b){
 		success = b;
-	}
-
-	public void updateLobbies(List<Lobby> games){
-		this.games = games;
 	}
 
 	public void addPlayerToGame(String name) {
@@ -334,41 +283,152 @@ public class App implements Runnable{
 	 * METHODE POST GUI ------------------------------------
 	 * -----------------------------------------------------
 	 */
-	
+
 	public String getStatus(){
 		return status;
 	}
-	
+
 	public void connectToServer(String addrIP, int port) throws UnknownHostException, IOException{
 		connection = Connection.getInstance();
 		if (connection.connect(addrIP, port)){ // connection réussie
+			msgReader.setStream(connection.getInputStream());
 			prepareChoice();
 		} else { // connection echouée
-			((ConnectionFrame) mainFrame).display("Echec de la connexion au serveur.", Color.RED);
+			mainFrame.display("Echec de la connexion au serveur.", Color.RED);
 		}
 	}
-	
+
 	public void prepareChoice(){
 		status = "authOrRegister";
 		mainFrame.setVisible(false);
 		mainFrame = new ConnectionFrame(this, "GENial, s'identifier ou s'enregistrer");
-		((ConnectionFrame)mainFrame).display("Avez-vous deja un compte ou voulez-vous en creer un nouveau ?", Color.BLACK);
+		mainFrame.display("Avez-vous deja un compte ou voulez-vous en creer un nouveau ?", Color.BLACK);
 		mainFrame.setVisible(true);
 	}
-	
+
 	public void prepareAuth(){
 		status = "auth";
 		mainFrame.setVisible(false);
-		mainFrame = new ConnectionFrame(this, "GENial, s'identifier", "Nom d'utilisateur", "Mot de passe", true);
-		((ConnectionFrame)mainFrame).display("Veuillez entrer votre identifiant ainsi que votre mot de passe.", Color.BLACK);
+		mainFrame = new ConnectionFrame(this, "GENial, s'identifier", "Nom d'utilisateur : ", "Mot de passe : ", true);
+		mainFrame.display("Veuillez entrer votre identifiant ainsi que votre mot de passe.", Color.BLACK);
 		mainFrame.setVisible(true);
 	}
-	
+
 	public void prepareRegistration(){
 		status = "register";
 		mainFrame.setVisible(false);
-		mainFrame = new ConnectionFrame(this, "GENial, s'enregistrer", "Nom d'utilisateur", "Mot de passe", true);
-		((ConnectionFrame)mainFrame).display("Veuillez entrer l'identifiant ainsi que le mot de passe que vous voulez utiliser.", Color.BLACK);
+		mainFrame = new ConnectionFrame(this, "GENial, s'enregistrer", "Nom d'utilisateur : ", "Mot de passe : ", "Confirmer le mot de passe : ");
+		mainFrame.display("Veuillez entrer l'identifiant ainsi que le mot de passe que vous voulez utiliser.", Color.BLACK);
 		mainFrame.setVisible(true);
+	}
+
+	private void prepareLobbies(){
+		status = "connected";
+		mainFrame.setVisible(false);
+		mainFrame = new LobbiesFrame(this);
+		mainFrame.setVisible(true);
+	}
+
+	public void auth(String name, String pwd){
+		if (status.equals("auth")){
+			// envoi du message
+			success = false;
+			Auth authMsg = new Auth(name, pwd);
+			authMsg.accept(msgHandler);
+			// recuperation de la reponse
+			msgReader.getMessage();
+			if(success){
+				Settings.userName = name;
+				prepareLobbies();
+			}
+		}
+	}
+
+	public void register(String name, String pwd){
+		if (status.equals("register")){
+			// envoi du message
+			success = false;
+			Register registerMsg = new Register(name, pwd);
+			registerMsg.accept(msgHandler);
+
+			// recupereation de la reponse
+			msgReader.getMessage();
+			if (success){
+				Settings.userName = name;
+				prepareLobbies();
+			}
+		}
+	}
+
+	public void refused(String msg){
+		if (status.equals("auth") || status.equals("register")){
+			mainFrame.display(msg, Color.RED);
+		} if (status.equals("connected")){
+			//TODO gestion message erreur du serveur si on rejoint/cree une partie
+		}
+	}
+
+	public void joinAGame(String gameName){
+		if (status.equals("connected")){
+			// envoi du message
+			Join joinMsg = new Join(gameName);
+			joinMsg.accept(msgHandler);
+			// recuperation de la reponse
+			success = false;
+			msgReader.getMessage();
+			msgReader.getMessage();
+			if (success){
+				/*
+				Lobby temp = games.get(0); // TODO choper via le nom
+				currentGame = new Game(temp.getNbSquares(), temp.getDifficulty(), temp.getPlayers(), temp.getName(), temp.getMaxPlayers()); 
+				currentGame.addPlayer(clientName); //TODO possibilite de concurrence ici !!!!
+				 */
+				//TODO blublublu
+				status = "onGame";
+				System.out.println("Vous avez rejoins une partie !! :D");
+			}
+		}
+	}
+
+	public void createAGame(String gameName, int nbPlayers, int diff, int nbSquare){
+		if (status.equals("connected")){
+			// envoi du message
+			Create createMsg = new Create(gameName, nbPlayers, diff, nbSquare);
+			createMsg.accept(msgHandler);
+
+			// recuperation de la reponse
+			success = false;
+			// le serveur envoie la liste des parties puis le message d'acceptation
+			// TODO EST-CE AUSSI LE CAS SI REFUS ?
+			msgReader.getMessage();
+			msgReader.getMessage();
+			// traitement en cas de response favorable
+			if(success){
+				status = "onGame";
+				//TODO gestion en cas d'acceptation -> ouverture de la vue plateau
+				System.out.println("La partie a ete cree !!! :D :D ");
+			}
+		}
+	}
+
+	public void refreshGamesList(){
+		if (status.equals("connected")){
+			// envoi du message
+			Refresh refreshMsg = new Refresh();
+			refreshMsg.accept(msgHandler);
+			// recuperation de la reponse
+			msgReader.getMessage();
+		}
+	}
+
+	public void updateLobbies(List<Lobby> games){
+		this.games = games;
+		if (status.equals("connected")){
+			mainFrame.updateList();
+		}
+	}
+
+	public List<Lobby> getGameList(){
+		return games;
 	}
 }

@@ -29,23 +29,16 @@ public class MessageReader {
 					msgJson = in.readLine();
 					Refuse refuse = JsonObjectMapper.parseJson(msgJson, Refuse.class);
 					// traite le message
-					application.setSuccess(false);
+					//TODO normalement plus utilisé application.setSuccess(false);
+					application.refused(refuse.getReason());
 					System.out.println("Echec : " + refuse.getReason());
 					break;
 				case Protocol.CMD_GAMES_LIST:
 					// deserialise le message
 					msgJson = in.readLine();
-					System.out.println(msgJson);
+					
 					GamesList games = JsonObjectMapper.parseJson(msgJson, GamesList.class);
 					// traite le message
-					if (!games.getGames().isEmpty()) {
-						for (Lobby g : games.getGames()) {
-							System.out.print("Partie de " + g.getName() + ", " + g.getPlayers().size() + "/" + g.getMaxPlayers() + ", taille du plateau : " + g.getNbSquares() + ", difficulté : " + g.getDifficulty());
-						}
-					} else {
-						System.out.println("Aucune partie existante");
-					}
-					// on met a jour la liste des jeux
 					application.updateLobbies(games.getGames());
 					break;
 				case Protocol.CMD_BEGIN:

@@ -3,11 +3,8 @@ package gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.UnknownHostException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -19,9 +16,9 @@ import javax.swing.SwingConstants;
 
 import application.App;
 
-public class TwoEntriesPanel extends EntriesPanel {
+public class ThreeEntriesPanel extends EntriesPanel {
 	private AppFrame mainFrame;
-	
+
 	private JPanel fieldsPanel;
 	private JPanel mainPanel;
 
@@ -33,20 +30,24 @@ public class TwoEntriesPanel extends EntriesPanel {
 	private JLabel secondFieldDesc;
 	private JTextField secondTextField;
 
+	private JPanel thirdPanel;
+	private JLabel thirdFieldDesc;
+	private JTextField thirdTextField;
+
 	private JPanel buttonPanel;
 	private JButton confirmButton;
 	private JButton backButton;
 
 	private App app;
 
-	public TwoEntriesPanel(App app, String field1, String field2, boolean addButton, AppFrame mainFrame){
+	public ThreeEntriesPanel(App app, String field1, String field2, String field3, AppFrame mainFrame){
 		this.app = app;
 
 		fieldsPanel = new JPanel();
 		fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.PAGE_AXIS));
 
 		firstPanel = new JPanel();
-		firstPanel.setLayout(new GridLayout(1,2));
+		firstPanel.setLayout(new GridLayout(1,4));
 		firstFieldDesc = new JLabel(field1, SwingConstants.RIGHT);
 		firstTextField = new JTextField(15);
 		firstPanel.add(firstFieldDesc, Component.RIGHT_ALIGNMENT);
@@ -55,29 +56,31 @@ public class TwoEntriesPanel extends EntriesPanel {
 		secondPanel = new JPanel();
 		secondPanel.setLayout(new GridLayout(1,4));
 		secondFieldDesc = new JLabel(field2, SwingConstants.RIGHT);
-		if (app.getStatus().equals("auth")){
-			secondTextField = new JPasswordField(8);
-		} else {
-			secondTextField = new JTextField(8);
-		}
+		secondTextField = new JPasswordField(8);
 		secondPanel.add(secondFieldDesc);
 		secondPanel.add(secondTextField);
+		
+		thirdPanel = new JPanel();
+		thirdPanel.setLayout(new GridLayout(1,4));
+		thirdFieldDesc = new JLabel(field3, SwingConstants.RIGHT);
+		thirdTextField = new JPasswordField(8);
+		thirdPanel.add(thirdFieldDesc);
+		thirdPanel.add(thirdTextField);
 
 		fieldsPanel.add(firstPanel);
 		fieldsPanel.add(secondPanel);
+		fieldsPanel.add(thirdPanel);
 
 		buttonPanel = new JPanel();
-		if (addButton){
-			backButton = new JButton("Retour");
-			backButton.addActionListener(new ActionListener(){
+		backButton = new JButton("Retour");
+		backButton.addActionListener(new ActionListener(){
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					app.prepareChoice();
-				}
-			});
-			buttonPanel.add(backButton);
-		}
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				app.prepareChoice();
+			}
+		});
+		
 		confirmButton = new JButton("Continuer");
 		confirmButton.addActionListener(new ActionListener(){
 
@@ -85,35 +88,13 @@ public class TwoEntriesPanel extends EntriesPanel {
 			public void actionPerformed(ActionEvent e) {
 				String status = app.getStatus();
 				switch(status){
-				case "connection":
-					try {
-						app.connectToServer(firstTextField.getText(), Integer.parseInt(secondTextField.getText()));
-					} catch (NumberFormatException e1) {
-						mainFrame.display("Format du port incorrect (doit etre un entier positif).", Color.RED);
-						//e1.printStackTrace();
-					} catch (UnknownHostException e1) {
-						mainFrame.display("Adresse inconnue.", Color.RED);
-						//e1.printStackTrace();
-					} catch (IOException e1) {
-						mainFrame.display("Une erreur est survenue, vous avez ete deconnecte.", Color.RED);
-						//e1.printStackTrace();
-					}
-					break;
-				case "auth":
-					System.out.println("AUTH : nom = " + firstTextField.getText() + ", mdp = " + secondTextField.getText());
-					if (firstTextField.getText().equals("") || firstTextField.getText() == null){
-						mainFrame.display("Le nom d'utilisateur n'a pas été renseigné", Color.RED);
-					} else if(secondTextField.getText().equals("") || secondTextField.getText() == null){
-						mainFrame.display("Le mot de passe n'a pas été renseigné", Color.RED);
-					} else {
-						app.auth(firstTextField.getText(), secondTextField.getText());
-					}
-					break;
 				case "register":
-					if (firstTextField.getText().equals("") || firstTextField.getText() == null){
-						mainFrame.display("Le nom d'utilisateur n'a pas été renseigné", Color.RED);
-					} else if(secondTextField.getText().equals("") || secondTextField.getText() == null){
-						mainFrame.display("Le mot de passe n'a pas été renseigné", Color.RED);
+					if (firstTextField.getText().equals("") || firstTextField.getText() == null
+					|| secondTextField.getText().equals("") || secondTextField.getText() == null
+					|| thirdTextField.getText().equals("") || thirdTextField.getText() == null){
+						mainFrame.display("Un champs n'est pas renseigne.", Color.RED);
+					} else if(!(secondTextField.getText().equals(thirdTextField.getText()))){
+						mainFrame.display("Vos deux mots de passe ne sont pas identique.", Color.RED);
 					} else {
 						app.register(firstTextField.getText(), secondTextField.getText());
 					}
@@ -124,6 +105,8 @@ public class TwoEntriesPanel extends EntriesPanel {
 			}
 
 		});
+		
+		buttonPanel.add(backButton);
 		buttonPanel.add(confirmButton);
 
 		mainPanel = new JPanel();
