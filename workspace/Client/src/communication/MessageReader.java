@@ -118,6 +118,7 @@ public class MessageReader {
 					break;
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.out.println("Deconnecte du serveur...");;
 		}
 	}
