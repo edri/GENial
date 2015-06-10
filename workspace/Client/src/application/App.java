@@ -54,6 +54,13 @@ public class App {
 		mainFrame = temp;
 		mainFrame.setVisible(true);
 
+		try {
+			listMiniJeux.get(1).start(2, 28);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		/*// Vue plateau
 		ArrayList<String> players = new ArrayList<>();
 		players.add("Miguel");
