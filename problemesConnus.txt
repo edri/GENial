@@ -1,0 +1,6 @@
+ERREURS / PROBLEMES CONNUES :
+- Il est possible de connecter deux clients avec les mêmes identifiants
+- Il est possible de créer un compte avec un nom déjà existant tant que le mdp est différent (fait planter le serveur : erreur sql)
+- Si le créateur de la partie se déconnecte avant d'avoir démarré cette dernière. Il sera impossible aux autres joueurs de la lancer
+- Lorsque l'on crée une partie, dans le cas ou la creation est acceptee, le serveur nous fournis une liste de partie vide
+- Les messages d'erreurs ne sont pas affiché dans la liste de salon (refuse -> join/create) a implementer

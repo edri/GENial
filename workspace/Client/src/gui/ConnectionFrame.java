@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -16,12 +14,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import application.App;
 
-public class ConnectionFrame extends JFrame {
+public class ConnectionFrame extends AppFrame {
 	private JPanel mainPanel;
 	private JLabel banner;
-	//private JTextArea display;
 	private JTextPane display;
-	private TwoEntriesPanel entriesPanel;
+	private EntriesPanel entriesPanel;
 	private TwoChoicesPanel choicesPanel;
 	private App app;
 
@@ -43,7 +40,7 @@ public class ConnectionFrame extends JFrame {
 		display = new JTextPane();
 		display.setText("Zone pour texte informatif");
 		display.setSize(new Dimension(300,80));
-		display.setLocation(250, 400);
+		display.setLocation(250, 420);
 		display.setEditable(false);
 		display.setBorder(BorderFactory.createLineBorder(Color.black));
 
@@ -96,7 +93,7 @@ public class ConnectionFrame extends JFrame {
 	 */
 	public ConnectionFrame(App app, String title, String field1, String field2, boolean backButton){
 		this(title);
-		
+
 		this.app = app;
 
 		entriesPanel = new TwoEntriesPanel(app, field1, field2, backButton, this);
@@ -111,9 +108,41 @@ public class ConnectionFrame extends JFrame {
 		add(mainPanel);
 		setResizable(false);
 	}
+	
+	/**
+	 * Constructeur pour une fenetre utilisant ThreeEntriesPanel
+	 * @param app
+	 * @param title
+	 * @param field1
+	 * @param field2
+	 * @param field3
+	 */
+	public ConnectionFrame(App app, String title, String field1, String field2, String field3){
+		this(title);
 
+		this.app = app;
+
+		entriesPanel = new ThreeEntriesPanel(app, field1, field2, field3, this);
+		entriesPanel.setSize(300, 100);
+		entriesPanel.setLocation(250, 300);
+		entriesPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+
+		mainPanel.add(banner);
+		mainPanel.add(entriesPanel);
+		mainPanel.add(display);
+
+		add(mainPanel);
+		setResizable(false);
+	}
+
+	@Override
 	public void display(String str, Color color){
 		display.setText(str);
 		display.setForeground(color);
+	}
+
+	@Override
+	public void updateList() {
+		// nothing to do
 	}
 }

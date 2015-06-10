@@ -13,7 +13,6 @@ import communication.Connection;
 public class Client {
 
 	public static void main(String[] args) {
-		Thread mainThread = new Thread(new App());
-		mainThread.start();
+		App app = new App();
 	}
 }
