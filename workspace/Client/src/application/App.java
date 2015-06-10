@@ -53,13 +53,6 @@ public class App {
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
 		mainFrame = temp;
 		mainFrame.setVisible(true);
-
-		try {
-			listMiniJeux.get(1).start(2, 28);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		/*// Vue plateau
 		ArrayList<String> players = new ArrayList<>();
