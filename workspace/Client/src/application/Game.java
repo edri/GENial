@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
-public class Game extends Observable {
+public class Game extends Observable implements Runnable {
+	private boolean isCreator;
 	private int nbCases;
 	private int difficulty;
 	private String winner;
@@ -33,6 +34,7 @@ public class Game extends Observable {
 		this.difficulty = difficulty;
 		this.name = name;
 		this.maxPlayers = maxPlayers;
+		isCreator = false;
 		
 		// positionne tous les joueurs à la position 0 (départ)
 		for (String player : players)
@@ -219,5 +221,19 @@ public class Game extends Observable {
 
 	public  Map<String, Integer> getPositions() {
 		return positions;
+	}
+	
+	public boolean isCreator(){
+		return isCreator;
+	}
+	
+	public void setCreator(boolean isCreator){
+		this.isCreator = isCreator;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 }
