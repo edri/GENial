@@ -245,6 +245,7 @@ public class App {
 			// recuperation de la reponse
 			msgReader.getMessage();
 			if(success){
+				msgReader.getMessage();
 				Settings.userName = name;
 				prepareLobbies();
 			}
@@ -261,6 +262,7 @@ public class App {
 			// recupereation de la reponse
 			msgReader.getMessage();
 			if (success){
+				msgReader.getMessage();
 				Settings.userName = name;
 				prepareLobbies();
 			}
