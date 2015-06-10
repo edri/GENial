@@ -14,7 +14,7 @@ public class ChallengerMod extends Observable implements Runnable {
 
     private final int threadTime;
     private final Thread activity;
-    private int currentLeftSeconds = 11;
+    private int currentLeftSeconds = 31;
     private Random random;
     private Timer timer = new Timer();
     private TimerTask task;

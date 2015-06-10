@@ -246,6 +246,8 @@ public class App {
 			// recuperation de la reponse
 			msgReader.getMessage();
 			if(success){
+				// recuperation de la liste de salon
+				msgReader.getMessage();
 				Settings.userName = name;
 				prepareLobbies();
 			}
@@ -262,6 +264,8 @@ public class App {
 			// recupereation de la reponse
 			msgReader.getMessage();
 			if (success){
+				// recuperation de la liste de salon
+				msgReader.getMessage();
 				Settings.userName = name;
 				prepareLobbies();
 			}

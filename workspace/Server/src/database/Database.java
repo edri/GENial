@@ -78,11 +78,17 @@ public class Database {
 		return null;
 	}
 
-	public boolean playerAlreadyExist(String username, String hashPass) {
+	public boolean playerAlreadyExist(String username) {
 		try {
-			return auth(username, hashPass).first();
+			PreparedStatement sql = conn
+					.prepareStatement("SELECT username FROM player;");
+			ResultSet rs = sql.executeQuery();
+			while (rs.next()) {
+				if(rs.getString(1).contains(username))
+					return true;
+			}
+			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;

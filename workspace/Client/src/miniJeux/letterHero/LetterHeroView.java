@@ -53,7 +53,6 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    private final LetterHeroMod modele;
    private final JLabel lblScore;
    private final JLabel lblTime;
-   private final JLabel lblStartGame;
    private final JLabel lblEndGame;
    private final JLabel[] flames = new JLabel[3];
    private final JLabel[] chars = new JLabel[3];
@@ -95,12 +94,6 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       lblTime.setBounds(LARGEUR - 50, 5, HAUTEUR, 15);
       img.add(lblTime);
       
-      lblStartGame = new JLabel("Appuyez sur n'importe quelle touche pour commencer.", JLabel.CENTER);
-      lblStartGame.setForeground(Color.WHITE);
-      lblStartGame.setFont(new Font("TimeRoman",  Font.BOLD, 17));
-      lblStartGame.setBounds(0, 250, LARGEUR, 50);
-      img.add(lblStartGame);
-      
       lblEndGame = new JLabel(new ImageIcon(ImageIO.read(new File("images/LetterHero/finish.png"))), JLabel.CENTER);
       lblEndGame.setBounds(0, 250, LARGEUR, 80);
       lblEndGame.setVisible(false);
@@ -128,6 +121,12 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
       
       pack();
       setVisible(true);
+      
+      try {
+          modele.startThread();
+       } catch (LineUnavailableException | UnsupportedAudioFileException | IOException ex) {
+          Logger.getLogger(LetterHeroView.class.getName()).log(Level.SEVERE, null, ex);
+       }
    }
 
    @Override
@@ -162,17 +161,7 @@ public class LetterHeroView extends JFrame implements Observer, KeyListener
    @Override
    public void keyPressed(KeyEvent e)
    {
-      if (modele.isGameRunning() && !modele.isAlive())
-      {
-         lblStartGame.setVisible(false);
-         
-         try {
-            modele.startThread();
-         } catch (LineUnavailableException | UnsupportedAudioFileException | IOException ex) {
-            Logger.getLogger(LetterHeroView.class.getName()).log(Level.SEVERE, null, ex);
-         }
-      }
-      else if (modele.isGameRunning())
+      if (modele.isGameRunning())
       {
          position = -1;
          
