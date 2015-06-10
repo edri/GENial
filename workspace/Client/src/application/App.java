@@ -53,7 +53,7 @@ public class App {
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
 		mainFrame = temp;
 		mainFrame.setVisible(true);
-
+		
 		/*// Vue plateau
 		ArrayList<String> players = new ArrayList<>();
 		players.add("Miguel");

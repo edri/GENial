@@ -54,6 +54,7 @@ public class ChallengerView extends JFrame implements Observer
    private final ChallengerMod modele;
    private final JLabel lblScore = new JLabel("Score : 0");
    private final JLabel lblTime = new JLabel("00:30");
+   private final JLabel lblEndGame;
 
    public ChallengerView(ChallengerMod modele) throws IOException
    {
@@ -80,6 +81,13 @@ public class ChallengerView extends JFrame implements Observer
       lblTime.setBounds(LARGEUR - 50, 5, HAUTEUR, 15);
       img.add(lblTime);
       
+      lblEndGame = new JLabel("TERMINE !", JLabel.CENTER);
+      lblEndGame.setForeground(Color.WHITE);
+      lblEndGame.setFont(new Font("TimeRoman",  Font.BOLD, 80));
+      lblEndGame.setBounds(0, 250, LARGEUR, 80);
+      lblEndGame.setVisible(false);
+      img.add(lblEndGame);
+      
       img.add(modele.getPlanet());
       
       pack();
@@ -104,7 +112,8 @@ public class ChallengerView extends JFrame implements Observer
       }
       else
       {
-         lblTime.setText("00:00");
+         lblTime.setText("00:00");         
+         lblEndGame.setVisible(true);
       }
    }
 }
