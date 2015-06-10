@@ -186,8 +186,10 @@ public class ClientWorker implements Runnable {
                     	break;
 						
                     case Protocol.CMD_CHOOSE_GAME: // J'ai choisi un mini-jeu
+                    	System.out.println("Recu choose");
                     	ChooseGame gameChosen = JsonObjectMapper.parseJson(reader.readLine(), ChooseGame.class);
                     	synchronized(myGame) {
+                    		myGame.setMiniGameId(gameChosen.getGameId());
                     		myGame.notify();
                     	}
                     	break;
