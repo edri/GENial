@@ -205,17 +205,19 @@ public class ServerGame implements Runnable {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
 
-			
+			//while(true);
 			synchronized(this) {
 				try {
+					System.out.println("Before wait");
 					wait();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			
+			System.out.println("Sorti du wait");
 			
 			startMiniGame(); // Lancement du mini-jeu
 			while(scores.size() != connections.values().size()); // Tant qu'on a pas reçu tous les scores
@@ -264,6 +266,7 @@ public class ServerGame implements Runnable {
 	public void startMiniGame() {
 		int seed = new Random().nextInt();
 		try {
+			System.out.println("Start game envoye");
 			sendToAll(Protocol.CMD_START_GAME, JsonObjectMapper.toJson(new StartGame(miniGameId, seed)));
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
