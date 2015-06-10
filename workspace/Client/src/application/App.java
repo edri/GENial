@@ -54,7 +54,8 @@ public class App {
 		mainFrame = temp;
 		mainFrame.setVisible(true);
 
-		/*// Vue plateau
+		/*
+		// Vue plateau
 		ArrayList<String> players = new ArrayList<>();
 		players.add("Miguel");
 		players.add("Jerôme");
@@ -63,7 +64,7 @@ public class App {
 		Game game = new Game(10, 3, players, "Partie 1", 20);
 
 		GameView gameView = new GameView(game);
-		gameView.setSize(new Dimension(1000, 300));
+		gameView.setSize(1000, 300);
 
 		new Thread(new Runnable() {
 
