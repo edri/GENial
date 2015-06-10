@@ -234,6 +234,8 @@ public class ClientWorker implements Runnable {
 			try {
 				socket.close();
 				server.disconnectPlayer(this);
+				writer.println(Protocol.CMD_DISCONNECT);
+				writer.println(JsonObjectMapper.toJson(new Disconnect(playerName)));
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
