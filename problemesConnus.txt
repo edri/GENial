@@ -2,5 +2,4 @@
 - Si le créateur de la partie se déconnecte avant d'avoir démarré cette dernière. Il sera impossible aux autres joueurs de la lancer (A NE PAS GERER, JUSTE NOTIFIER DANS LE RAPPORT)
 - Les messages d'erreurs ne sont pas affiché dans la liste de salon (refuse -> join/create) a implementer (probleme client)
 - La table des parties existantes est editable :( (probleme client)
-- Lors d'une identification on reçoit comme quoi il y a une partie mais elle ne s'affiche pas
 
