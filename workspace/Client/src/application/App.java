@@ -53,8 +53,9 @@ public class App {
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
 		mainFrame = temp;
 		mainFrame.setVisible(true);
-		
-		/*// Vue plateau
+
+		/*
+		// Vue plateau
 		ArrayList<String> players = new ArrayList<>();
 		players.add("Miguel");
 		players.add("Jerôme");
@@ -63,7 +64,7 @@ public class App {
 		Game game = new Game(10, 3, players, "Partie 1", 20);
 
 		GameView gameView = new GameView(game);
-		gameView.setSize(new Dimension(1000, 300));
+		gameView.setSize(1000, 300);
 
 		new Thread(new Runnable() {
 
@@ -245,6 +246,8 @@ public class App {
 			// recuperation de la reponse
 			msgReader.getMessage();
 			if(success){
+				// recuperation de la liste de salon
+				msgReader.getMessage();
 				Settings.userName = name;
 				prepareLobbies();
 			}
@@ -261,6 +264,8 @@ public class App {
 			// recupereation de la reponse
 			msgReader.getMessage();
 			if (success){
+				// recuperation de la liste de salon
+				msgReader.getMessage();
 				Settings.userName = name;
 				prepareLobbies();
 			}

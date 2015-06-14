@@ -90,6 +90,14 @@ public class ClientWorker implements Runnable {
 		this.myGame = myGame;
 	}
 	
+	private boolean playerAlreadyConnected(String name) {
+		for(ClientWorker cw : server.getClients()) {
+			if(cw.getPlayerName().contains(name))
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public void run() {
 		// Initialisation des fluxs
@@ -108,14 +116,22 @@ public class ClientWorker implements Runnable {
 				switch (command) {
 					case Protocol.CMD_AUTH: // Je veux me connecter
 						Auth authMsg = JsonObjectMapper.parseJson(reader.readLine(), Auth.class);
-						
+							
 						ResultSet rs = db.auth(authMsg.getName(), authMsg.getPwd());
 						if(rs.next()) {
+							
+						
+							if(playerAlreadyConnected(authMsg.getName()))  {
+								failure("Ce joueur est deja connecte.");
+								System.out.println("adfsad");
+								break;
+							}
+							
 							success();
-							playerId = rs.getInt(1);
-							playerName = rs.getString(2);
 							writer.println(Protocol.CMD_GAMES_LIST);
 							writer.println(JsonObjectMapper.toJson(new GamesList(server.getLobbies())));
+							playerId = rs.getInt(1);
+							playerName = rs.getString(2);
 						} else {
 							failure("Nom de joueur ou mot de passe incorrect.");
 						}
@@ -126,7 +142,7 @@ public class ClientWorker implements Runnable {
 						String line = reader.readLine();
 						Register reg = JsonObjectMapper.parseJson(line, Register.class);
 						
-						if(db.playerAlreadyExist(reg.getName(), reg.getPwd())) {
+						if(db.playerAlreadyExist(reg.getName())) {
 							failure("Ce nom de joueur existe deja.");
 						} else {
 							db.createPlayer(reg.getName(), reg.getPwd());
@@ -147,6 +163,8 @@ public class ClientWorker implements Runnable {
 							server.addGame(tmp);
 							success();
 						}
+						writer.println(Protocol.CMD_GAMES_LIST);
+						writer.println(JsonObjectMapper.toJson(new GamesList(server.getLobbies())));
 						
 						break;
 					
@@ -163,6 +181,9 @@ public class ClientWorker implements Runnable {
 						} else {
 							failure("Il n'y a plus de place dans cette partie.");
 						}
+						writer.println(Protocol.CMD_GAMES_LIST);
+						writer.println(JsonObjectMapper.toJson(new GamesList(server.getLobbies())));
+						
 						break;
 						
 					case Protocol.CMD_REFRESH: // Je veux raffraichir
@@ -213,6 +234,8 @@ public class ClientWorker implements Runnable {
 			try {
 				socket.close();
 				server.disconnectPlayer(this);
+				writer.println(Protocol.CMD_DISCONNECT);
+				writer.println(JsonObjectMapper.toJson(new Disconnect(playerName)));
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
