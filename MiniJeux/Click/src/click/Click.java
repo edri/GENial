@@ -9,7 +9,7 @@ import java.io.IOException;
 public class Click {
 
 	static String title = "Click !";
-    static int difficulty = 1;
+    static int difficulty = 2;
     static int seed = 28;
 	
     public static void startGame() throws IOException, InterruptedException {
@@ -17,7 +17,7 @@ public class Click {
         ClickMod mod = new ClickMod(difficulty, seed);
         // Nouvelle vue
        new ClickView(mod);      
-       mod.start(difficulty, seed);
+       mod.start();
        
     }
     
