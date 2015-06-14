@@ -31,7 +31,7 @@ public class LobbiesButtonsPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!app.getStatus().equals("connected")){
+				if (app.getStatus().equals("connected")){
 					creationFrame = new LobbyCreationFrame(app);
 					creationFrame.setSize(350, 150);
 					creationFrame.setVisible(true);

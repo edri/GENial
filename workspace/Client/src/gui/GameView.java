@@ -6,16 +6,20 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import application.App;
 import application.Game;
 
 @SuppressWarnings("serial")
@@ -113,38 +117,63 @@ class CasesPanel extends JPanel {
 }
 
 public class GameView extends JFrame implements Observer {
+	private App app;
 	private Game modele;
-	private JTextArea textArea;
+	private JTextArea textDisplayArea;
 	private CasesPanel cases; // Plateau en soit
+	private JButton startButton;
 	
-	public GameView(Game modele) {
+	public GameView(Game modele, App app) {
 		super(modele.getName());
 		this.modele = modele;
+		this.app = app;
 		modele.addObserver(this);
 		
 		setLayout(new FlowLayout());
 		
 		// Initialisation de la "console" du plateau
-		textArea = new JTextArea(5, 20);
-		JScrollPane scrollPane = new JScrollPane(textArea); 
-		textArea.setEditable(false);
-		textArea.setPreferredSize(new Dimension(950, 100));
-		textArea.setText("Initialisation");
-		getContentPane().add(textArea);
+		textDisplayArea = new JTextArea(5, 20);
+		JScrollPane scrollPane = new JScrollPane(textDisplayArea); 
+		textDisplayArea.setEditable(false);
+		textDisplayArea.setPreferredSize(new Dimension(950, 100));
+		textDisplayArea.setText("Initialisation");
+		getContentPane().add(textDisplayArea);
 		
 		// Initialisation du panel contenant les cases du tableau
 		cases = new CasesPanel(modele);
 		cases.setPreferredSize(new Dimension(950, 100));
 		getContentPane().add(cases);
+		
+		startButton = new JButton("Lancer la partie");
+		startButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (app.getStatus().equals("onGame")){
+					app.startGame();
+					startButton.setEnabled(false);
+				}
+			}
+		});
+		
+		startButton.setEnabled(modele.isCreator());
+		getContentPane().add(startButton);
+		
 		pack();
 		validate();
 		
-		setVisible(true);
+		this.setSize(980, 500);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setVisible(true);
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
 		// Redessiner le plateau
 		repaint();
+	}
+	
+	public void display(String msg){
+		// met a jour l'affichage de la partie
+		textDisplayArea.setText(msg);
 	}
 }
