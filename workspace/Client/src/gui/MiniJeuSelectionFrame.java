@@ -47,7 +47,7 @@ public class MiniJeuSelectionFrame extends JFrame implements ActionListener {
 		chooseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				app.setSelectedGame(selectedGame);
+				app.chooseGame(selectedGame);
 				setVisible(false);
 			}
 		});

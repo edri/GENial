@@ -30,7 +30,6 @@ public class App {
 	private MessageHandler msgHandler;
 	private MessageReader msgReader;
 	private String status;
-	private String selectedGame;
 	private Connection connection;
 
 	private AppFrame mainFrame;
@@ -79,7 +78,7 @@ public class App {
 				}
 			}
 		}).start();*/
-		
+
 		//MiniJeuSelectionFrame radioFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
 	}
 
@@ -309,21 +308,23 @@ public class App {
 			// choisi le mini-jeu voulu
 			System.out.println("Il y a " + listMiniJeux.size() + " jeux dispo.");
 			MiniJeuSelectionFrame selectionFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
-			
-			// on recherche l'index du jeu
-			int index = 0;
-			for (String s : listMiniJeux.keySet()){
-				if (s.equals(selectedGame)){
-					break;
-				}
-				index++;
-			}
-			// on indique notre reponse
-			ChooseGame chooseMsg = new ChooseGame(index);
-			chooseMsg.accept(msgHandler);
 		}
 	}
-	
+
+	public void chooseGame(String selectedGame){
+		// on recherche l'index du jeu
+		int index = 0;
+		for (String s : listMiniJeux.keySet()){
+			if (s.equals(selectedGame)){
+				break;
+			}
+			index++;
+		}
+		// on indique notre reponse
+		ChooseGame chooseMsg = new ChooseGame(index);
+		chooseMsg.accept(msgHandler);
+	}
+
 	public void startGame(int gameId, int seed) {
 		System.out.println("Je dois commencer le jeu dont l'id est " + gameId + " avec un seed de " + seed + ".");
 
@@ -351,7 +352,7 @@ public class App {
 			mainFrame.updateList();
 		}
 	}
-	
+
 	public void addPlayerToGame(String name) {
 		currentGame.addPlayer(name);
 	}
@@ -362,9 +363,5 @@ public class App {
 
 	public String getStatus(){
 		return status;
-	}
-	
-	public void setSelectedGame(String s){
-		selectedGame = s;
 	}
 }
