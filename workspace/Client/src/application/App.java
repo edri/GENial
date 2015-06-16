@@ -322,6 +322,7 @@ public class App {
 		}
 		// on indique notre reponse
 		ChooseGame chooseMsg = new ChooseGame(index);
+		System.out.println("GameId du choose: " + chooseMsg.getGameId());
 		chooseMsg.accept(msgHandler);
 	}
 
