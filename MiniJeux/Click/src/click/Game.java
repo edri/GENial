@@ -12,8 +12,8 @@ public abstract class Game {
 	private int seed;
 
 	public void startGame() {
-		code = 1;
-		difficulty = 0;
+		code = 28;
+		difficulty = 3;
 		seed = 28;
    	}
 

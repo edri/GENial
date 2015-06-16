@@ -72,6 +72,7 @@ public class LobbiesFrame extends AppFrame {
 		this.setLayout(null);
 		
 		updateTable();
+		updateList();
 		
 		JPanel panel1 = new JPanel();
 		panel1.setSize(200, 480);

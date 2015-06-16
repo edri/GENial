@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -20,7 +21,7 @@ import gui.*;
 public class App {
 	private Game currentGame;
 	private GameView gameView;
-	private ArrayList<MiniJeu> listMiniJeux;
+	private Map<String,MiniJeu> listMiniJeux;
 	private List<Lobby> games;
 	private Scanner scan;
 	private boolean start;
@@ -41,20 +42,21 @@ public class App {
 		currentGame = null;
 		clientName = "";
 		games = new ArrayList<Lobby>();
-		listMiniJeux = new ArrayList<>();
+		listMiniJeux = new HashMap<String,MiniJeu>();
 		msgHandler = new MessageHandler(this);
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
 
-		listMiniJeux.add(new LetterHero(this));
-		listMiniJeux.add(new Challenger(this));
+		listMiniJeux.put("LetterHero", new LetterHero(this));
+		listMiniJeux.put("Challenger", new Challenger(this));
 
 		ConnectionFrame temp = new ConnectionFrame(this, "GENial, connection au serveur", "Adresse IP : ", "Port : ", false);
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
 		mainFrame = temp;
 		mainFrame.setVisible(true);
-		
-		/*// Vue plateau
+
+		/*
+		// Vue plateau
 		ArrayList<String> players = new ArrayList<>();
 		players.add("Miguel");
 		players.add("Jerôme");
@@ -63,7 +65,7 @@ public class App {
 		Game game = new Game(10, 3, players, "Partie 1", 20);
 
 		GameView gameView = new GameView(game);
-		gameView.setSize(new Dimension(1000, 300));
+		gameView.setSize(1000, 300);
 
 		new Thread(new Runnable() {
 
@@ -78,23 +80,8 @@ public class App {
 				}
 			}
 		}).start();*/
-	}
-
-	private void startGame(){
-		// on envoie le message
-		Start startMsg = new Start();
-		startMsg.accept(msgHandler);
-		// on recupere la reponse
-		msgReader.getMessage();
-	}
-
-
-
-	private String askString(String msg){
-		String temp;
-		System.out.println(msg);
-		temp = scan.nextLine();
-		return temp;
+		
+		MiniJeuSelectionFrame radioFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
 	}
 
 	public void setEndGame(boolean b){
@@ -105,46 +92,8 @@ public class App {
 		success = b;
 	}
 
-	public void addPlayerToGame(String name) {
-		currentGame.addPlayer(name);
-	}
-
 	public void removePlayerFromGame(String name) {
 		currentGame.removePlayer(name);
-	}
-
-	public void roll(String name) {
-		System.out.println("C'est a " + name + "de lancer les des !");
-		currentGame.setPlayerTurn(name);
-
-		if (name.equals(clientName)) { // roll si c'est le tour du joueur
-			Roll roll = new Roll();
-			roll.accept(msgHandler);
-		}
-	}
-
-	public void movePlayer(int value) {
-		System.out.println("Le joueur avance de " + value + " cases.");
-		currentGame.movePlayer(value);
-	}
-
-	public void selectGame(Map<Integer, String> map) {
-		// choisi le mini-jeu voulu
-		System.out.println("Veuillez selectionner un mini-jeu parmis les jeux suivants :");
-		Collection<String> choices = map.values();
-		int i = 0;
-		for (String name : choices){
-			System.out.println("[" + i + "] : " + name);
-			i++;
-		}
-		int selected = -1;
-		while(selected < 0 || selected >= choices.size()){
-			selected = scan.nextInt();
-			scan.nextLine(); // consume the return line
-		}
-		// on indique notre reponse
-		ChooseGame chooseMsg = new ChooseGame(selected);
-		chooseMsg.accept(msgHandler);
 	}
 
 	public void startGame(int gameId, int seed) {
@@ -164,12 +113,17 @@ public class App {
 		SendResult resultMsg = new SendResult(score);
 		resultMsg.accept(msgHandler);
 	}
-	
+
 	/*
 	 * -----------------------------------------------------
 	 * METHODE POST GUI ------------------------------------
 	 * -----------------------------------------------------
 	 */
+
+	/*
+	 * Methodes de préparation de Frame
+	 */
+
 
 	public void connectToServer(String addrIP, int port) throws UnknownHostException, IOException{
 		connection = Connection.getInstance();
@@ -224,17 +178,22 @@ public class App {
 			// verification normalement inutile mais dans le doute...
 			if (myLobby != null){ 
 				// int nbCases, int difficulty, ArrayList<String> players, String name, int maxPlayers
-				currentGame = new Game(myLobby.getNbSquares(),myLobby.getDifficulty(),myLobby.getPlayers(), myLobby.getName(), myLobby.getMaxPlayers());
-				currentGame.addPlayer(Settings.userName);
+				currentGame = new Game(myLobby.getNbSquares(),myLobby.getDifficulty(),myLobby.getPlayers(), myLobby.getName(), myLobby.getMaxPlayers(), msgReader);
 				if (isCreator){
 					currentGame.setCreator(isCreator);
 				}
 
-				gameView = new GameView(currentGame);
+				gameView = new GameView(currentGame, this);
+				Thread gameThread = new Thread(currentGame);
+				gameThread.start();
 				System.out.println("Vous avez rejoins une partie !! :D");
 			}
 		}
 	}
+
+	/*
+	 * Methodes communications serveur
+	 */
 
 	public void auth(String name, String pwd){
 		if (status.equals("auth")){
@@ -245,6 +204,7 @@ public class App {
 			// recuperation de la reponse
 			msgReader.getMessage();
 			if(success){
+				// recuperation de la liste de salon
 				msgReader.getMessage();
 				Settings.userName = name;
 				prepareLobbies();
@@ -262,6 +222,7 @@ public class App {
 			// recupereation de la reponse
 			msgReader.getMessage();
 			if (success){
+				// recuperation de la liste de salon
 				msgReader.getMessage();
 				Settings.userName = name;
 				prepareLobbies();
@@ -291,6 +252,7 @@ public class App {
 				status = "onGame";
 				System.out.println("le game list nous a retourne une liste de " + games.size() + " parties");
 				prepareGame(gameName, false);
+				gameView.display("Veuillez attendre que le createur lance la partie");
 			}
 		}
 	}
@@ -311,6 +273,7 @@ public class App {
 				status = "onGame";
 				System.out.println("le game list nous a retourne une liste de " + games.size() + " parties");
 				prepareGame(gameName, true);
+				gameView.display("Demarrer la partie quand vous le souhaitez.");
 			}
 		}
 	}
@@ -325,17 +288,71 @@ public class App {
 		}
 	}
 
+	public void startGame(){
+		if (status.equals("onGame")){
+			// on envoie le message
+			Start startMsg = new Start();
+			startMsg.accept(msgHandler);
+			// on recupere la reponse
+			// message recup dans le run() de game msgReader.getMessage();
+		}
+	}
+
+	public void begin(){
+		if (status.equals("onGame")){
+			status = "started";
+		}
+	}
+
+	public void roll(String name) {
+		if (status.equals("started")){
+			System.out.println("C'est a " + name + " de lancer les des !");
+			gameView.display("Au tour de " + name + " lancer les des.");
+			currentGame.setPlayerTurn(name);
+			if (name.equals(Settings.userName)) { // roll si c'est le tour du joueur
+				Roll roll = new Roll();
+				roll.accept(msgHandler);
+			}
+		}
+	}
+
+	public void selectGame(Map<Integer, String> map) {
+		if (status.equals("started")){
+			// choisi le mini-jeu voulu
+			System.out.println("Il y a " + listMiniJeux.size() + " jeux dispo.");
+			MiniJeuSelectionFrame selectionFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
+			//TODO creer une fenetre de selection de jeu
+			// on indique notre reponse
+			//ChooseGame chooseMsg = new ChooseGame(selected);
+			//chooseMsg.accept(msgHandler);
+		}
+	}
+
+	/*
+	 * Autres methodes
+	 */
+
+	public void movePlayer(int value) {
+		System.out.println("Le joueur avance de " + value + " cases.");
+		currentGame.movePlayer(value);
+		gameView.display(currentGame.getPlayerTurn() + " avance de " + value + " cases");
+	}
+
 	public void updateLobbies(List<Lobby> games){
 		this.games = games;
 		if (status.equals("connected")){
 			mainFrame.updateList();
 		}
 	}
+	
+	public void addPlayerToGame(String name) {
+		currentGame.addPlayer(name);
+	}
 
 	public List<Lobby> getGameList(){
 		return games;
 	}
-	
+
 	public String getStatus(){
 		return status;
 	}

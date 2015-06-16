@@ -42,8 +42,8 @@ public class MessageReader {
 					application.updateLobbies(games.getGames());
 					break;
 				case Protocol.CMD_BEGIN:
-					System.out.println("Le jeu va commencer !");
 					in.readLine();
+					application.begin();
 					break;
 				case Protocol.CMD_NEW_PLAYER:
 					// deserialisation du message
@@ -81,7 +81,6 @@ public class MessageReader {
 					msgJson = in.readLine();
 					System.out.println(msgJson);
 					Dice dice = JsonObjectMapper.parseJson(msgJson, Dice.class);
-					System.out.println("Passe" + dice.getPlayerName());
 					// traitement du message 
 					application.roll(dice.getPlayerName());
 					break;
@@ -95,6 +94,7 @@ public class MessageReader {
 				case Protocol.CMD_SELECT_GAME:
 					// deserialisation du message
 					msgJson = in.readLine();
+					System.out.println(msgJson);
 					SelectGame selectGame = JsonObjectMapper.parseJson(msgJson, SelectGame.class);
 					// traitement du message
 					application.selectGame(selectGame.getGamesMap());

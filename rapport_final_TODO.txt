@@ -1,5 +1,4 @@
 TODO
-	Diagramme d'activités
 	Commenter les modèles de domaine
 	Diagramme de classes
 	
