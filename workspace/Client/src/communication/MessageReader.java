@@ -36,7 +36,7 @@ public class MessageReader {
 				case Protocol.CMD_GAMES_LIST:
 					// deserialise le message
 					msgJson = in.readLine();
-					
+					System.out.println(msgJson);
 					GamesList games = JsonObjectMapper.parseJson(msgJson, GamesList.class);
 					// traite le message
 					application.updateLobbies(games.getGames());
