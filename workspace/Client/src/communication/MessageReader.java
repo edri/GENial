@@ -48,6 +48,7 @@ public class MessageReader {
 				case Protocol.CMD_NEW_PLAYER:
 					// deserialisation du message
 					msgJson = in.readLine();
+					System.out.println(msgJson);
 					NewPlayer newPlayer = JsonObjectMapper.parseJson(msgJson, NewPlayer.class);
 					// traitement du message
 					System.out.println(newPlayer.getNewPlayerName() + " a rejoins la partie !");

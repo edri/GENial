@@ -93,6 +93,7 @@ public class ServerGame implements Runnable {
 	
 	public void addPlayer(String name, ClientWorker connection) {
 		connections.put(name, connection);
+		positions.put(name, 0);
 	}
 
 	
