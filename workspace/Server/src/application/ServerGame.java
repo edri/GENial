@@ -37,6 +37,7 @@ public class ServerGame implements Runnable {
 	private boolean miniGameChosed = false;
 	private boolean miniGameTerminated = false;
 	private int miniGameId;
+	private boolean hasBegun = false;
 	private Database db;
 	
 	public ServerGame() {
@@ -144,6 +145,8 @@ public class ServerGame implements Runnable {
 	
 	@Override
 	public void run() {
+		hasBegun = true;
+		
 		// Envoi à chaque client un signal de commencement.
 		for (ClientWorker client : connections.values()) {
 			client.setMyGame(this);
@@ -245,6 +248,14 @@ public class ServerGame implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void setGameHasBegun(boolean begun) {
+		hasBegun = begun;
+	}
+	
+	public boolean getGameHasBegun() {
+		return hasBegun;
 	}
 	
 	public void setPlayerHasRoll(boolean playerHasRoll) {

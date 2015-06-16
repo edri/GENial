@@ -170,6 +170,12 @@ public class ClientWorker implements Runnable {
 					
 					case Protocol.CMD_JOIN: // Je veux rejoindre une partie
 						Join joinGame = JsonObjectMapper.parseJson(reader.readLine(), Join.class);
+						
+						if(server.getGames().get(joinGame.getGameName()).getGameHasBegun()) {
+							failure("Cette partie a deja commence");
+							break;
+						}
+						
 						if(server.getGames().get(joinGame.getGameName()) == null) {
 							failure("Cette partie n'existe pas !");
 							break;
@@ -183,7 +189,6 @@ public class ClientWorker implements Runnable {
 						}
 						writer.println(Protocol.CMD_GAMES_LIST);
 						writer.println(JsonObjectMapper.toJson(new GamesList(server.getLobbies())));
-						
 						break;
 						
 					case Protocol.CMD_REFRESH: // Je veux raffraichir
@@ -193,6 +198,7 @@ public class ClientWorker implements Runnable {
 						
                     case Protocol.CMD_START: // Je démarre la partie
                     	// Démarre le thread de la partie en cours (un ServerGame)
+                    	myGame.setGameHasBegun(true);
                         new Thread(myGame).start();
                         break;
                         
