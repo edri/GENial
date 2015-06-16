@@ -9,9 +9,7 @@ import javax.swing.ImageIcon;
 class Slurpeur extends Observable implements Runnable {
 	
 	static boolean move;
-	
-	private static int difficulty;
-
+ 
 	// Directions possibles
 	enum Directions {NORD, SUD, EST, OUEST};
 	Directions direction;		// Direction actuelle
@@ -27,17 +25,16 @@ class Slurpeur extends Observable implements Runnable {
 	
 	public static Slurpeur instance;
 	
-	private Slurpeur(int difficutly) throws IOException {
+	private Slurpeur() throws IOException {
 		this.posX = 100;
 		this.posY = 100;
-		this.difficulty = difficulty;
 		move = false;
 	}
 	
-	public static Slurpeur getInstance(int difficutly) {
+	public static Slurpeur getInstance() {
 		if (instance == null) {
 			try {
-				instance = new Slurpeur(difficulty);
+				instance = new Slurpeur();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -210,7 +207,7 @@ class Slurpeur extends Observable implements Runnable {
 				 
 				for (int i = 0; i < new Random().nextInt(200) + 100; ++i) {
 					try {
-						Thread.sleep(7 - ( difficulty));
+						Thread.sleep(10 - 2 * ClickMod.getDifficulty());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

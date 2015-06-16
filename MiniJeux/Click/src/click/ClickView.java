@@ -2,11 +2,15 @@ package click;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
@@ -30,10 +34,6 @@ class ImagePanel extends JComponent {
       g.drawImage(image, 0, 0, this);
    }
 }
-
-
-
-
 
 
 
@@ -88,7 +88,7 @@ public class ClickView implements Observer {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				modele.startThread();
+			//	modele.startThread();
 			//	slurpeur.moveSlurpeur();
 				lblCommencer.setVisible(false);
 				slurpeur.moveSlurpeur();
@@ -125,8 +125,26 @@ public class ClickView implements Observer {
 		
 		ImagePanel img = new ImagePanel(ImageIO.read(new File("backgroundBrun.jpg")));
 		this.frame.getContentPane().add(img, null);
+		
+		img.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				Image cursorImage = new ImageIcon("fleche.png").getImage().getScaledInstance(20, 139, 0);  
+	
+				Toolkit kit = Toolkit.getDefaultToolkit();
+				Dimension dim = kit.getBestCursorSize(20, 139);
+				Point hotspot = new Point(0, 0);  
+				String cursorName = "fleche";
+				img.setCursor(kit.createCustomCursor(cursorImage, hotspot, cursorName));
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {	
+			}
+		});
 
-		this.slurpeur = Slurpeur.getInstance(modele.getDifficulty());
+		this.slurpeur = Slurpeur.getInstance();
 		this.slurpeur.addObserver(this);
 		
 		this.slurpeurview = new SlurpeurView(modele);
@@ -160,7 +178,7 @@ public class ClickView implements Observer {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				System.out.println("+10");
-				lblPoints.setVisible(true);
+				// lblPoints.setVisible(true);
 				modele.incrementerScore();	
 				try {
 					slurpeur.jump();		// risque de bloquage
@@ -171,12 +189,30 @@ public class ClickView implements Observer {
 			}
 		});
 		
+		/*
+		this.imgSlurpeur.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				// TODO Auto-generated method stub
+				imgSlurpeur.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		*/
 		img.add(this.imgSlurpeur);
 		
 		lblCommencer.setForeground(Color.BLACK);
 		lblCommencer.setFont(new Font("TimeRoman",  Font.BOLD, 40));
 		lblCommencer.setBounds(0, 0, HAUTEUR, LARGEUR);
 		lblCommencer.setAlignmentX(JLabel.CENTER);
+		lblCommencer.setVisible(false);
 		//lblCommencer.setHorizontalAlignment(frame.CENTER_ALIGNMENT);
 		img.add(lblCommencer);
 		
@@ -191,10 +227,11 @@ public class ClickView implements Observer {
 		lblTime.setBounds(LARGEUR - 70, 5, HAUTEUR, 25);
 		img.add(lblTime);
 		
-		this.frame.setUndecorated(true);
 		this.frame.pack();
 		this.frame.setVisible(true);
 		this.frame.setLocationRelativeTo(null);
+		
+		this.modele.startThread();
 	}
 	
 	
