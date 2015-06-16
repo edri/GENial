@@ -123,7 +123,7 @@ public class ClickView implements Observer {
         });
         */
 		
-		ImagePanel img = new ImagePanel(ImageIO.read(new File("backgroundBrun.jpg")));
+		ImagePanel img = new ImagePanel(ImageIO.read(new File("backgroundHerbe.jpg")));
 		this.frame.getContentPane().add(img, null);
 		
 		img.addMouseMotionListener(new MouseMotionListener() {
@@ -216,13 +216,13 @@ public class ClickView implements Observer {
 		//lblCommencer.setHorizontalAlignment(frame.CENTER_ALIGNMENT);
 		img.add(lblCommencer);
 		
-		lblScore.setForeground(Color.BLACK);
+		lblScore.setForeground(Color.RED);
 		lblScore.setFont(new Font("TimeRoman",  Font.BOLD, 25));
 		lblScore.setBounds(5, 5, HAUTEUR, 25);
 		img.add(lblScore);
 	
 		
-		lblTime.setForeground(Color.BLACK);
+		lblTime.setForeground(Color.RED);
 		lblTime.setFont(new Font("TimeRoman",  Font.BOLD, 25));
 		lblTime.setBounds(LARGEUR - 70, 5, HAUTEUR, 25);
 		img.add(lblTime);
