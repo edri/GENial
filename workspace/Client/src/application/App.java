@@ -29,8 +29,8 @@ public class App {
 	private boolean success;
 	private MessageHandler msgHandler;
 	private MessageReader msgReader;
-	private String clientName;
 	private String status;
+	private String selectedGame;
 	private Connection connection;
 
 	private AppFrame mainFrame;
@@ -40,7 +40,6 @@ public class App {
 		start = false;
 		endGame = false;
 		currentGame = null;
-		clientName = "";
 		games = new ArrayList<Lobby>();
 		listMiniJeux = new HashMap<String,MiniJeu>();
 		msgHandler = new MessageHandler(this);
@@ -81,7 +80,7 @@ public class App {
 			}
 		}).start();*/
 		
-		MiniJeuSelectionFrame radioFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
+		//MiniJeuSelectionFrame radioFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
 	}
 
 	public void setEndGame(boolean b){
@@ -94,17 +93,6 @@ public class App {
 
 	public void removePlayerFromGame(String name) {
 		currentGame.removePlayer(name);
-	}
-
-	public void startGame(int gameId, int seed) {
-		System.out.println("Je dois commencer le jeu dont l'id est " + gameId + " avec un seed de " + seed + ".");
-
-		try {
-			listMiniJeux.get(gameId).start(2, seed);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void sendScore(int score) {
@@ -321,10 +309,29 @@ public class App {
 			// choisi le mini-jeu voulu
 			System.out.println("Il y a " + listMiniJeux.size() + " jeux dispo.");
 			MiniJeuSelectionFrame selectionFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
-			//TODO creer une fenetre de selection de jeu
+			
+			// on recherche l'index du jeu
+			int index = 0;
+			for (String s : listMiniJeux.keySet()){
+				if (s.equals(selectedGame)){
+					break;
+				}
+				index++;
+			}
 			// on indique notre reponse
-			//ChooseGame chooseMsg = new ChooseGame(selected);
-			//chooseMsg.accept(msgHandler);
+			ChooseGame chooseMsg = new ChooseGame(index);
+			chooseMsg.accept(msgHandler);
+		}
+	}
+	
+	public void startGame(int gameId, int seed) {
+		System.out.println("Je dois commencer le jeu dont l'id est " + gameId + " avec un seed de " + seed + ".");
+
+		try {
+			listMiniJeux.get(gameId).start(2, seed);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -355,5 +362,9 @@ public class App {
 
 	public String getStatus(){
 		return status;
+	}
+	
+	public void setSelectedGame(String s){
+		selectedGame = s;
 	}
 }
