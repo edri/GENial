@@ -25,7 +25,7 @@ public class MiniJeuSelectionFrame extends JFrame implements ActionListener {
 	private JButton chooseButton;
 	private String selectedGame;
 	
-	public MiniJeuSelectionFrame(App app, Map<String, MiniJeu> map){
+	public MiniJeuSelectionFrame(App app, Map<String, MiniJeu> map, String[] gameName){
 		this.setTitle("GENial, selectionnez le mini-jeu a lancer");
 		this.app = app;
 		boolean firstCheckButton = true;
@@ -35,13 +35,14 @@ public class MiniJeuSelectionFrame extends JFrame implements ActionListener {
 		
 		radioPanel = new JPanel(new GridLayout(0,1));
 		buttonGroup = new ButtonGroup();
-		for (String s : map.keySet()){
-			createCheckButton(s, firstCheckButton);
+		for (int i = 0; i < gameName.length; i++){
+			createCheckButton(gameName[i], firstCheckButton);
 			if (firstCheckButton){
 				firstCheckButton = false;
-				selectedGame = s;
+				selectedGame = gameName[i];
 			}
 		}
+		
 		buttonPanel = new JPanel();
 		chooseButton = new JButton("Selectionner");
 		chooseButton.addActionListener(new ActionListener(){

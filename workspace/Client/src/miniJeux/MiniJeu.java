@@ -18,7 +18,7 @@ public abstract class MiniJeu {
 	
 	public void sendScore(int score)
 	{
-		app.sendScore(score);
+		app.sendScore(score, this);
 	}
 	
 	public abstract void finish();

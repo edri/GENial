@@ -10,7 +10,7 @@ public class Lobby {
 	int maxPlayers;
 	
 	public Lobby() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public Lobby(int nbSquares, ArrayList<String> players, int difficulty,

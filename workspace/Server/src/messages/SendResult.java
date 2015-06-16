@@ -6,6 +6,10 @@ package messages;
 public class SendResult {
 	private int score;
 	
+	public SendResult(){
+		score = -1;
+	}
+	
 	public SendResult(int score){
 		this.score = score;
 	}

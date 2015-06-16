@@ -75,6 +75,7 @@ public class MessageReader {
 					msgJson = in.readLine();
 					WinnerGame winnerGame = JsonObjectMapper.parseJson(msgJson, WinnerGame.class);
 					// traitement du message
+					//TODO annoncer le vainqueur. Bah oui quand même...
 					System.out.println(winnerGame.getPlayerName() + " a gagne le mini-jeu avec un score de " + winnerGame.getScore());
 					break;
 				case Protocol.CMD_DICE:

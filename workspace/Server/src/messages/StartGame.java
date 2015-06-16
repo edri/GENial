@@ -7,6 +7,10 @@ public class StartGame {
 	private int gameId;
 	private int seed;
 	
+	public StartGame(){
+		
+	}
+	
 	public StartGame(int gameId, int seed){
 		this.gameId = gameId;
 		this.seed = seed;

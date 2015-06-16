@@ -22,6 +22,7 @@ public class App {
 	private Game currentGame;
 	private GameView gameView;
 	private Map<String,MiniJeu> listMiniJeux;
+	private String[] gameName;
 	private List<Lobby> games;
 	private Scanner scan;
 	private boolean start;
@@ -33,6 +34,7 @@ public class App {
 	private Connection connection;
 
 	private AppFrame mainFrame;
+	private Thread gameThread;
 
 	public App(){
 		status = "connection";
@@ -45,6 +47,9 @@ public class App {
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
 
+		gameName = new String[2];
+		gameName[0] = "LetterHero";
+		gameName[1] = "Challenger";
 		listMiniJeux.put("LetterHero", new LetterHero(this));
 		listMiniJeux.put("Challenger", new Challenger(this));
 
@@ -52,53 +57,6 @@ public class App {
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
 		mainFrame = temp;
 		mainFrame.setVisible(true);
-
-		/*
-		// Vue plateau
-		ArrayList<String> players = new ArrayList<>();
-		players.add("Miguel");
-		players.add("Jerôme");
-		players.add("Mélanie");
-		players.add("David");
-		Game game = new Game(10, 3, players, "Partie 1", 20);
-
-		GameView gameView = new GameView(game);
-		gameView.setSize(1000, 300);
-
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (true) {
-					game.setPlayerTurn("Miguel");
-					game.movePlayer(1);
-					try {
-					Thread.sleep(1000);
-					} catch (InterruptedException e) { }
-				}
-			}
-		}).start();*/
-
-		//MiniJeuSelectionFrame radioFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
-	}
-
-	public void setEndGame(boolean b){
-		endGame = b;
-	}
-
-	public void setSuccess(boolean b){
-		success = b;
-	}
-
-	public void removePlayerFromGame(String name) {
-		currentGame.removePlayer(name);
-	}
-
-	public void sendScore(int score) {
-		System.out.println("J'ai reçu le score de l'utilisateur : " + score + ".");
-
-		SendResult resultMsg = new SendResult(score);
-		resultMsg.accept(msgHandler);
 	}
 
 	/*
@@ -171,7 +129,7 @@ public class App {
 				}
 
 				gameView = new GameView(currentGame, this);
-				Thread gameThread = new Thread(currentGame);
+				gameThread = new Thread(currentGame);
 				gameThread.start();
 				System.out.println("Vous avez rejoins une partie !! :D");
 			}
@@ -307,33 +265,55 @@ public class App {
 		if (status.equals("started")){
 			// choisi le mini-jeu voulu
 			System.out.println("Il y a " + listMiniJeux.size() + " jeux dispo.");
-			MiniJeuSelectionFrame selectionFrame = new MiniJeuSelectionFrame(this, listMiniJeux);
+			MiniJeuSelectionFrame selectionFrame = new MiniJeuSelectionFrame(this, listMiniJeux, gameName);
 		}
 	}
 
 	public void chooseGame(String selectedGame){
-		// on recherche l'index du jeu
-		int index = 0;
-		for (String s : listMiniJeux.keySet()){
-			if (s.equals(selectedGame)){
-				break;
+		if (status.equals("started")){
+			// on recherche l'index du jeu
+			int index = 0;
+			for (; index < gameName.length; index++){
+				if (gameName[index].equals(selectedGame)){
+					break;
+				}
 			}
-			index++;
+			// on indique notre reponse
+			ChooseGame chooseMsg = new ChooseGame(index);
+			System.out.println("GameId du choose: " + chooseMsg.getGameId());
+			chooseMsg.accept(msgHandler);
 		}
-		// on indique notre reponse
-		ChooseGame chooseMsg = new ChooseGame(index);
-		System.out.println("GameId du choose: " + chooseMsg.getGameId());
-		chooseMsg.accept(msgHandler);
 	}
 
 	public void startGame(int gameId, int seed) {
-		System.out.println("Je dois commencer le jeu dont l'id est " + gameId + " avec un seed de " + seed + ".");
+		if(status.equals("started")){
+			System.out.println("Je dois commencer le jeu dont l'id est " + gameId + " avec un seed de " + seed + ".");
 
-		try {
-			listMiniJeux.get(gameId).start(2, seed);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				listMiniJeux.get(gameName[gameId]).start(currentGame.getDifficulty(), seed);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void sendScore(int score, MiniJeu miniJeu) {
+		if (status.equals("started")){
+			System.out.println("J'ai reçu le score de l'utilisateur : " + score + ".");
+			//TODO popup avec le score
+			miniJeu.finish();
+			SendResult resultMsg = new SendResult(score);
+			resultMsg.accept(msgHandler);
+		}
+	}
+
+	public void endGame(){
+		status = "connected";
+		gameView.dispose();
+		currentGame.setFinished(true);
+		if (gameThread.isAlive()){
+			gameThread.stop();
 		}
 	}
 
@@ -342,9 +322,11 @@ public class App {
 	 */
 
 	public void movePlayer(int value) {
-		System.out.println("Le joueur avance de " + value + " cases.");
-		currentGame.movePlayer(value);
-		gameView.display(currentGame.getPlayerTurn() + " avance de " + value + " cases");
+		if (status.equals("started")){
+			System.out.println("Le joueur avance de " + value + " cases.");
+			currentGame.movePlayer(value);
+			gameView.display(currentGame.getPlayerTurn() + " avance de " + value + " cases");
+		}
 	}
 
 	public void updateLobbies(List<Lobby> games){
@@ -358,11 +340,26 @@ public class App {
 		currentGame.addPlayer(name);
 	}
 
+	public void removePlayerFromGame(String name) {
+		currentGame.removePlayer(name);
+	}
+
 	public List<Lobby> getGameList(){
 		return games;
 	}
 
 	public String getStatus(){
 		return status;
+	}
+
+	public void setSuccess(boolean b){
+		success = b;
+	}
+
+	public void setEndGame(boolean b){
+		endGame = b;
+		if (endGame){
+			endGame();
+		}
 	}
 }

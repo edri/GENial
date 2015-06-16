@@ -242,7 +242,11 @@ public class Game extends Observable implements Runnable {
 	public String getPlayerTurn(){
 		return playerTurn;
 	}
-
+	
+	public void setFinished(boolean b){
+		finished = b;
+	}
+	
 	@Override
 	public void run() {
 		while(!finished){

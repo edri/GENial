@@ -9,6 +9,10 @@ package messages;
 public class Begin  {
 	private int difficulty;
 	
+	public Begin(){
+		difficulty = 0;
+	}
+	
 	public Begin(int i){
 		difficulty = i;
 	}
