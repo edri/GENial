@@ -45,6 +45,11 @@ public class SlurpeurMod extends Observable {
 	            	slurpeur.setRunning(false);
 	                timer.cancel();
 	                timer.purge();
+	                
+	                // On indique que l'état de l'objet a été modifié.
+	                setChanged();
+	                // On notifie les observateurs que l'objet a été modifié.
+	                notifyObservers();
 	            }
 	         }
 		};
