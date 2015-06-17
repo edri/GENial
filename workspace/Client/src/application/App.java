@@ -50,9 +50,10 @@ public class App {
 		msgReader = new MessageReader(this);
 		scan = new Scanner(System.in);
 
-		gameName = new String[2];
+		gameName = new String[3];
 		gameName[0] = "LetterHero";
 		gameName[1] = "Challenger";
+		gameName[2] = "Slurpeur";
 		listMiniJeux.put("LetterHero", new LetterHero(this));
 		listMiniJeux.put("Challenger", new Challenger(this));
 		listMiniJeux.put("Slurpeur", new Slurpeur(this));
@@ -261,7 +262,7 @@ public class App {
 			gameView.display("Au tour de " + name + " lancer les des.");
 			currentGame.setPlayerTurn(name);
 			if (name.equals(Settings.userName)) { // roll si c'est le tour du joueur
-				new RollPopupFrame(this,"C'est a votre tour de lancer les des !");
+				new RollFrame(this,"C'est a votre tour de lancer les des !");
 			}
 		}
 	}
@@ -313,7 +314,6 @@ public class App {
 	public void sendScore(int score, MiniJeu miniJeu) {
 		if (status.equals("started")){
 			System.out.println("J'ai reçu le score de l'utilisateur : " + score + ".");
-			//TODO popup avec le score
 			miniJeu.finish();
 			SendResult resultMsg = new SendResult(score);
 			resultMsg.accept(msgHandler);

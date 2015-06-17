@@ -11,14 +11,14 @@ import javax.swing.JPanel;
 
 import application.App;
 
-public class RollPopupFrame extends JFrame {
+public class WinnerFrame extends JFrame {
 	private JPanel mainPanel;
 	private JPanel textPanel;
 	private JLabel text;
 	private JPanel buttonPanel;
 	private JButton button;
 	
-	public RollPopupFrame(App app, String str){
+	public WinnerFrame(App app, String str){
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		
@@ -33,7 +33,7 @@ public class RollPopupFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
-				app.sendRoll();
+				app.setEndGame(true);
 			}
 		});
 		buttonPanel.add(button);

@@ -1,6 +1,8 @@
 package communication;
 
-import gui.RollPopupFrame;
+import gui.GameWinnerFrame;
+import gui.RollFrame;
+import gui.WinnerFrame;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,8 +71,8 @@ public class MessageReader {
 					msgJson = in.readLine();
 					Winner winner = JsonObjectMapper.parseJson(msgJson, Winner.class);
 					// traitement du message
+					new WinnerFrame(application, winner.getWinnerName() + " est le grand gagnant du jeu !!! ");
 					System.out.println(winner.getWinnerName() + " est le grand gagnant du jeu !!! ");
-					application.setEndGame(true);
 					break;
 				case Protocol.CMD_WINNER_GAME:
 					// deserialisation du message
@@ -78,6 +80,7 @@ public class MessageReader {
 					WinnerGame winnerGame = JsonObjectMapper.parseJson(msgJson, WinnerGame.class);
 					// traitement du message
 					//TODO annoncer le vainqueur. Bah oui quand même...
+					new GameWinnerFrame(winnerGame.getPlayerName() + " a gagne le mini-jeu avec un score de " + winnerGame.getScore());
 					System.out.println(winnerGame.getPlayerName() + " a gagne le mini-jeu avec un score de " + winnerGame.getScore());
 					break;
 				case Protocol.CMD_DICE:
