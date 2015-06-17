@@ -23,20 +23,23 @@ class SlurpeurComponent extends Observable implements Runnable {
 	private int posX;		// Position x
 	private int posY;		// Position y
 	
+	private Random random;
+	
 	public static SlurpeurComponent instance;
 	
 	private boolean running;
 	
-	private SlurpeurComponent() throws IOException {
+	private SlurpeurComponent(int seed) throws IOException {
 		this.posX = 100;
 		this.posY = 100;
 		move = false;
+		random = new Random(seed);
 	}
 	
-	public static SlurpeurComponent getInstance() {
+	public static SlurpeurComponent getInstance(int seed) {
 		if (instance == null) {
 			try {
-				instance = new SlurpeurComponent();
+				instance = new SlurpeurComponent(seed);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -108,13 +111,11 @@ class SlurpeurComponent extends Observable implements Runnable {
 
 	
 	public void jump() throws InterruptedException {
-			Random direction = new Random();		
-			Random pas = new Random();
 			
-			Directions ancienneDirection = this.direction;
-			int nouvelleDirection = direction.nextInt(4);
+			Directions ancienneDirection = direction;
+			int nouvelleDirection = random.nextInt(4);
 			
-			int nbDePas = pas.nextInt(150) + 100;
+			int nbDePas = random.nextInt(150) + 100;
 			
 			Thread.sleep(30);
 			switch (nouvelleDirection) {
@@ -180,10 +181,9 @@ class SlurpeurComponent extends Observable implements Runnable {
 	public void run() {	
 		while (running) { 
 			 // Choisir une direction
-	   	 	Random direction = new Random();
-			 Directions nouvelleDirection;
+	   	 	 Directions nouvelleDirection;
 
-			 switch(direction.nextInt(4)) {
+			 switch(random.nextInt(4)) {
 			 case 0:
 				 nouvelleDirection = Directions.NORD;
 				 this.direction = Directions.NORD;
@@ -206,7 +206,7 @@ class SlurpeurComponent extends Observable implements Runnable {
 				 break;
 			 }
 			 
-			for (int i = 0; i < new Random().nextInt(200) + 100; ++i) {
+			for (int i = 0; i < random.nextInt(200) + 100; ++i) {
 				try {
 					Thread.sleep(10 - 2 * SlurpeurMod.getDifficulty());
 				} catch (InterruptedException e) {

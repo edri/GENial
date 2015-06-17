@@ -22,7 +22,7 @@ public class SlurpeurMod extends Observable {
     private final Thread activity;
     
     private TimerTask task;
-    private int currentLeftSeconds = 5;
+    private int currentLeftSeconds = 30;
 	
 	private SlurpeurComponent slurpeur;	// La petite bête sur laquelle il faut cliquer
 	private int score = 0;		// Score du joueur
@@ -33,7 +33,7 @@ public class SlurpeurMod extends Observable {
 		this.difficulty = difficulty;
 		this.seed = seed;
 	    threadTime = (4 - difficulty);
-		this.slurpeur = SlurpeurComponent.getInstance();
+		this.slurpeur = SlurpeurComponent.getInstance(seed);
 		
 		slurpeur.setRunning(true);
 		activity = new Thread();
@@ -44,7 +44,6 @@ public class SlurpeurMod extends Observable {
 	            if (--currentLeftSeconds == -1)
 	            {
 	            	slurpeur.setRunning(false);
-	            	currentLeftSeconds = 0;
 	                timer.cancel();
 	                timer.purge();
 	            }
