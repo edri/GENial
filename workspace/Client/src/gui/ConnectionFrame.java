@@ -2,8 +2,11 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.File;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
@@ -21,6 +24,8 @@ public class ConnectionFrame extends AppFrame {
 	private EntriesPanel entriesPanel;
 	private TwoChoicesPanel choicesPanel;
 	private App app;
+	
+	private String imgLocation;
 
 	/**
 	 * Constructeur prive s'occupant du code commun
@@ -29,11 +34,14 @@ public class ConnectionFrame extends AppFrame {
 	private ConnectionFrame(String title){
 		setTitle(title);
 		setSize(800, 600);
+		imgLocation = "images"+File.separator+"logo_v2.png";
 		mainPanel = new JPanel();
 		mainPanel.setLayout(null);
 
 		banner = new JLabel("GENial, le jeu de plateau next-gen ! (logo)", SwingConstants.CENTER);
-		banner.setSize(500, 250);
+		URL imgURL = getClass().getResource(imgLocation);
+		banner.setIcon(new ImageIcon(imgURL, "Logo"));
+		banner.setSize(490, 250);
 		banner.setLocation(150, 20);
 		banner.setBorder(BorderFactory.createLineBorder(Color.black));
 
