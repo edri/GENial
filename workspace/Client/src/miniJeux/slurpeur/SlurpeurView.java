@@ -17,6 +17,8 @@ import java.sql.Time;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -197,7 +199,15 @@ public class SlurpeurView extends JFrame implements Observer {
 		setVisible(true);
 		setLocationRelativeTo(null);
 		
-		this.modele.startThread();
+		try {
+			this.modele.startThread();
+		} catch (LineUnavailableException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedAudioFileException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 	
 	
