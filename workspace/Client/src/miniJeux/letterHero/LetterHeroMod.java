@@ -49,7 +49,6 @@ public class LetterHeroMod extends Observable implements Runnable
       
       timeToSlide = ((HAUTEUR + SIZE_FLAMES) * threadTime) / 1000.0;
       
-      running = true;
       activity = new Thread(this);
       
       task = new TimerTask() {

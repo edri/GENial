@@ -1,4 +1,4 @@
-package click;
+package miniJeux.slurpeur;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -37,21 +37,20 @@ class ImagePanel extends JComponent {
 
 
 
-public class ClickView implements Observer {
+public class SlurpeurView extends JFrame implements Observer {
 
 	private final static int HAUTEUR = 700;
    	private final static int LARGEUR = 700;
    	
-   	JFrame frame;
    	JPanel panel;
    
    	// Le modèle
-   	private final ClickMod modele;
+   	private final SlurpeurMod modele;
    	// Le modèle slurpeur
-   	private final Slurpeur slurpeur;
+   	private final SlurpeurComponent slurpeur;
     // Le rendu du slurpeur
     JLabel imgSlurpeur;
-    private SlurpeurView slurpeurview;
+    private SlurpeurComponentView slurpeurview;
    	
    	// Les infos sur le jeu
    	private final JLabel lblScore = new JLabel("Score : 0");
@@ -66,13 +65,14 @@ public class ClickView implements Observer {
 	
 	// Pour les bouttons qui disparaissent
 	private Timer alphaChanger;
+	
+	private int seed;
   
 	
-	public ClickView(ClickMod modele) throws IOException {
-		
-		this.frame = new JFrame();
+	public SlurpeurView(SlurpeurMod modele, int seed) throws IOException {
+		this.seed = seed;
 		this.panel = new JPanel();
-		frame.addKeyListener(new KeyListener() {
+		addKeyListener(new KeyListener() {
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -99,38 +99,19 @@ public class ClickView implements Observer {
 		this.modele = modele;
 		this.modele.addObserver(this);
 		
-		this.frame.setTitle("Click !");
-		this.frame.setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
-		this.frame.setResizable(false);
-		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Slurpeur");
+		setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
-		/*
-		alphaChanger = new Timer(30, new ActionListener() {
-            private float incrementer = -.03f;
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               // float newAlpha = lblPoints.getAlpha() + incrementer;
-                if (newAlpha < 0) {
-                    newAlpha = 0;
-                    incrementer = -incrementer;
-                } else if (newAlpha > 1f) {
-                    newAlpha = 1f;
-                    incrementer = -incrementer;
-                }
-                lblPoints.setVisible(false);
-            }
-        });
-        */
-		
-		ImagePanel img = new ImagePanel(ImageIO.read(new File("backgroundHerbe.jpg")));
-		this.frame.getContentPane().add(img, null);
+		ImagePanel img = new ImagePanel(ImageIO.read(new File("images/Slurpeur/backgroundHerbe.jpg")));
+		getContentPane().add(img, null);
 		
 		img.addMouseMotionListener(new MouseMotionListener() {
 			
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				Image cursorImage = new ImageIcon("fleche.png").getImage().getScaledInstance(20, 139, 0);  
+				Image cursorImage = new ImageIcon("images/Slurpeur/fleche.png").getImage().getScaledInstance(20, 139, 0);  
 	
 				Toolkit kit = Toolkit.getDefaultToolkit();
 				Dimension dim = kit.getBestCursorSize(20, 139);
@@ -144,30 +125,42 @@ public class ClickView implements Observer {
 			}
 		});
 
-		this.slurpeur = Slurpeur.getInstance();
+		this.slurpeur = SlurpeurComponent.getInstance(seed);
 		this.slurpeur.addObserver(this);
 		
-		this.slurpeurview = new SlurpeurView(modele);
+		this.slurpeurview = new SlurpeurComponentView(modele);
 		
-		lblPoints = new JLabel(new ImageIcon(ImageIO.read(new File("plus10.png"))));		
+		lblPoints = new JLabel(new ImageIcon(ImageIO.read(new File("images/Slurpeur/plus10.png"))));		
 		lblPoints.setBounds(0, 0, 700, 700);
 		lblPoints.setVisible(false);
 		img.add(lblPoints);
 		
-		lblTermine = new JLabel(new ImageIcon(ImageIO.read(new File("termine.png"))));		
+		lblTermine = new JLabel(new ImageIcon(ImageIO.read(new File("images/Slurpeur/termine.png"))));		
 		lblTermine.setBounds(0, 0, 700, 700);
 		lblTermine.setVisible(false);
 		img.add(lblTermine);
 		
-		this.imgSlurpeur = new JLabel(new ImageIcon(ImageIO.read(new File("slurpeur.png"))));
-		this.imgSlurpeur.setBounds(slurpeur.getX(), slurpeur.getY(), 50, 50);
+		this.imgSlurpeur = new JLabel(new ImageIcon(ImageIO.read(new File("images/Slurpeur/slurpeur.png"))));
+		this.imgSlurpeur.setBounds(slurpeur.getX(), slurpeur.getY(), 40, 40);
 		this.imgSlurpeur.addMouseListener(new MouseListener() {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {}
 			
 			@Override
-			public void mousePressed(MouseEvent e) {}
+			public void mousePressed(MouseEvent e) {
+				if (modele.isGameRunning())
+				{
+					System.out.println("+10");
+					// lblPoints.setVisible(true);
+					modele.incrementerScore();	
+					try {
+						slurpeur.jump();		// risque de bloquage
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
 			
 			@Override
 			public void mouseExited(MouseEvent e) {}
@@ -176,36 +169,9 @@ public class ClickView implements Observer {
 			public void mouseEntered(MouseEvent e) {}
 			
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				System.out.println("+10");
-				// lblPoints.setVisible(true);
-				modele.incrementerScore();	
-				try {
-					slurpeur.jump();		// risque de bloquage
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
+			public void mouseClicked(MouseEvent e) {}
 		});
 		
-		/*
-		this.imgSlurpeur.addMouseMotionListener(new MouseMotionListener() {
-			
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				// TODO Auto-generated method stub
-				imgSlurpeur.setCursor(new Cursor(Cursor.HAND_CURSOR));
-				
-			}
-			
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		*/
 		img.add(this.imgSlurpeur);
 		
 		lblCommencer.setForeground(Color.BLACK);
@@ -227,9 +193,9 @@ public class ClickView implements Observer {
 		lblTime.setBounds(LARGEUR - 70, 5, HAUTEUR, 25);
 		img.add(lblTime);
 		
-		this.frame.pack();
-		this.frame.setVisible(true);
-		this.frame.setLocationRelativeTo(null);
+		pack();
+		setVisible(true);
+		setLocationRelativeTo(null);
 		
 		this.modele.startThread();
 	}
@@ -240,14 +206,15 @@ public class ClickView implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		lblScore.setText("Score : " + modele.getScore() + " ");
-		if(modele.getCurrentLeftSeconds() == 0) {
+		if(modele.getCurrentLeftSeconds() == -1) {
 			lblScore.setVisible(false);
 			lblTermine.setVisible(true);
+			lblTime.setText("00:00");
 		} else {
 			lblTime.setText("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));	
 		}	
 		imgSlurpeur.setIcon(slurpeur.getImage());
-		imgSlurpeur.setBounds(slurpeur.getX(), slurpeur.getY(), 100, 100);
+		imgSlurpeur.setBounds(slurpeur.getX(), slurpeur.getY(), 40, 40);
 	}
 
 }
