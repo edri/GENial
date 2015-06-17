@@ -1,4 +1,4 @@
-package click;
+package miniJeux.slurpeur;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -11,7 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 
-public class ClickMod extends Observable {
+public class SlurpeurMod extends Observable {
 	
 	private static int difficulty;
 	private final int seed;
@@ -22,26 +22,31 @@ public class ClickMod extends Observable {
     private final Thread activity;
     
     private TimerTask task;
-    private int currentLeftSeconds = 30;
+    private int currentLeftSeconds = 5;
 	
-	private Slurpeur slurpeur;	// La petite bête sur laquelle il faut cliquer
+	private SlurpeurComponent slurpeur;	// La petite bête sur laquelle il faut cliquer
 	private int score = 0;		// Score du joueur
 	
 	
 	
-	public ClickMod(int difficulty, int seed) throws IOException {
+	public SlurpeurMod(int difficulty, int seed) throws IOException {
 		this.difficulty = difficulty;
 		this.seed = seed;
 	    threadTime = (4 - difficulty);
-		this.slurpeur = Slurpeur.getInstance();
+		this.slurpeur = SlurpeurComponent.getInstance();
+		
+		slurpeur.setRunning(true);
 		activity = new Thread();
 		
 		task = new TimerTask() {
 	         @Override
 	         public void run() {
 	            if (--currentLeftSeconds == -1)
-	            {          
-	               System.exit(0); // A changer pour que l'appli ne se ferme pas sauvagement
+	            {
+	            	slurpeur.setRunning(false);
+	            	currentLeftSeconds = 0;
+	                timer.cancel();
+	                timer.purge();
 	            }
 	         }
 		};
@@ -74,6 +79,11 @@ public class ClickMod extends Observable {
          activity.start();
       }   
       timer.scheduleAtFixedRate(task, 0, 1000);
+   }
+   
+   public boolean isGameRunning()
+   {
+      return slurpeur.isSlurpeurRunning();
    }
    
 }

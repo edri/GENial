@@ -15,6 +15,7 @@ import messages.*;
 import miniJeux.MiniJeu;
 import miniJeux.challenger.Challenger;
 import miniJeux.letterHero.LetterHero;
+import miniJeux.slurpeur.Slurpeur;
 import communication.*;
 import gui.*;
 
@@ -52,6 +53,7 @@ public class App {
 		gameName[1] = "Challenger";
 		listMiniJeux.put("LetterHero", new LetterHero(this));
 		listMiniJeux.put("Challenger", new Challenger(this));
+		listMiniJeux.put("Slurpeur", new Slurpeur(this));
 
 		ConnectionFrame temp = new ConnectionFrame(this, "GENial, connection au serveur", "Adresse IP : ", "Port : ", false);
 		temp.display("Veuillez entrer l'adresse IP du serveur ainsi que le port sur lequel vous voulez vous connecter.", Color.BLACK);
