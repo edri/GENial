@@ -110,7 +110,7 @@ public class ChallengerMod extends Observable implements Runnable {
 
     public void startThread() throws LineUnavailableException, UnsupportedAudioFileException, IOException {
     	Clip music = AudioSystem.getClip();
-	  	AudioInputStream inputStream = AudioSystem.getAudioInputStream(ChallengerMod.class.getResourceAsStream("Challenger.wav"));
+	  	AudioInputStream inputStream = AudioSystem.getAudioInputStream(ChallengerMod.class.getResourceAsStream("../../musics/Challenger.wav"));
 	  	music.open(inputStream);
 	  	music.start();
     	

@@ -74,7 +74,7 @@ public class SlurpeurMod extends Observable {
 	
    public void startThread() throws LineUnavailableException, IOException, UnsupportedAudioFileException { 
 	  Clip music = AudioSystem.getClip();
-	  AudioInputStream inputStream = AudioSystem.getAudioInputStream(SlurpeurMod.class.getResourceAsStream("Slurpeur.wav"));
+	  AudioInputStream inputStream = AudioSystem.getAudioInputStream(SlurpeurMod.class.getResourceAsStream("../../musics/Slurpeur.wav"));
 	  music.open(inputStream);
 	  music.start();
 	   
