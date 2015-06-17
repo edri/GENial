@@ -1,5 +1,7 @@
 package communication;
 
+import gui.RollPopupFrame;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -83,7 +85,7 @@ public class MessageReader {
 					msgJson = in.readLine();
 					System.out.println(msgJson);
 					Dice dice = JsonObjectMapper.parseJson(msgJson, Dice.class);
-					// traitement du message 
+					// traitement du message
 					application.roll(dice.getPlayerName());
 					break;
 				case Protocol.CMD_MVT:

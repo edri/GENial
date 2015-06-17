@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 import settings.Settings;
 import messages.*;
 import miniJeux.MiniJeu;
@@ -136,6 +138,8 @@ public class App {
 		}
 	}
 
+
+
 	/*
 	 * Methodes communications serveur
 	 */
@@ -255,9 +259,15 @@ public class App {
 			gameView.display("Au tour de " + name + " lancer les des.");
 			currentGame.setPlayerTurn(name);
 			if (name.equals(Settings.userName)) { // roll si c'est le tour du joueur
-				Roll roll = new Roll();
-				roll.accept(msgHandler);
+				new RollPopupFrame(this,"C'est a votre tour de lancer les des !");
 			}
+		}
+	}
+
+	public void sendRoll(){
+		if (status.equals("started")){
+			Roll roll = new Roll();
+			roll.accept(msgHandler);
 		}
 	}
 
