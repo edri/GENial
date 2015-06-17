@@ -1,10 +1,19 @@
 package miniJeux.challenger;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+import miniJeux.slurpeur.SlurpeurMod;
 
 /**
  *
@@ -47,7 +56,18 @@ public class ChallengerMod extends Observable implements Runnable {
         planet = new Planet(this, posX, posY, 100);
         
         // Lancer le jeu
-        startThread();
+        try {
+			startThread();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     private void move() {
@@ -88,7 +108,12 @@ public class ChallengerMod extends Observable implements Runnable {
         notifyObservers();
     }
 
-    public void startThread() {
+    public void startThread() throws LineUnavailableException, UnsupportedAudioFileException, IOException {
+    	Clip music = AudioSystem.getClip();
+	  	AudioInputStream inputStream = AudioSystem.getAudioInputStream(ChallengerMod.class.getResourceAsStream("Challenger.wav"));
+	  	music.open(inputStream);
+	  	music.start();
+    	
         if (!activity.isAlive()) {
             activity.start();
         }

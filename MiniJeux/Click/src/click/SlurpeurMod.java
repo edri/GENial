@@ -1,13 +1,14 @@
-package miniJeux.slurpeur;
+package click;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 
 
 public class SlurpeurMod extends Observable {
@@ -32,19 +33,15 @@ public class SlurpeurMod extends Observable {
 		this.difficulty = difficulty;
 		this.seed = seed;
 	    threadTime = (4 - difficulty);
-		this.slurpeur = SlurpeurComponent.getInstance(seed);
-		
-		slurpeur.setRunning(true);
+		this.slurpeur = SlurpeurComponent.getInstance();
 		activity = new Thread();
 		
 		task = new TimerTask() {
 	         @Override
 	         public void run() {
 	            if (--currentLeftSeconds == -1)
-	            {
-	            	slurpeur.setRunning(false);
-	                timer.cancel();
-	                timer.purge();
+	            {          
+	               System.exit(0); // A changer pour que l'appli ne se ferme pas sauvagement
 	            }
 	         }
 		};
@@ -72,21 +69,11 @@ public class SlurpeurMod extends Observable {
 	}
 	
 	
-   public void startThread() throws LineUnavailableException, IOException, UnsupportedAudioFileException { 
-	  Clip music = AudioSystem.getClip();
-	  AudioInputStream inputStream = AudioSystem.getAudioInputStream(SlurpeurMod.class.getResourceAsStream("Slurpeur.wav"));
-	  music.open(inputStream);
-	  music.start();
-	   
+   public void startThread() {      
       if (!activity.isAlive()) {
          activity.start();
       }   
       timer.scheduleAtFixedRate(task, 0, 1000);
-   }
-   
-   public boolean isGameRunning()
-   {
-      return slurpeur.isSlurpeurRunning();
    }
    
 }
