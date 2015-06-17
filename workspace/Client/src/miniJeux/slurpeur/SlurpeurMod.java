@@ -1,14 +1,13 @@
 package miniJeux.slurpeur;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 
 public class SlurpeurMod extends Observable {
@@ -22,7 +21,7 @@ public class SlurpeurMod extends Observable {
     private final Thread activity;
     
     private TimerTask task;
-    private int currentLeftSeconds = 5;
+    private int currentLeftSeconds = 30;
 	
 	private SlurpeurComponent slurpeur;	// La petite bête sur laquelle il faut cliquer
 	private int score = 0;		// Score du joueur
@@ -33,7 +32,7 @@ public class SlurpeurMod extends Observable {
 		this.difficulty = difficulty;
 		this.seed = seed;
 	    threadTime = (4 - difficulty);
-		this.slurpeur = SlurpeurComponent.getInstance();
+		this.slurpeur = SlurpeurComponent.getInstance(seed);
 		
 		slurpeur.setRunning(true);
 		activity = new Thread();
@@ -44,7 +43,6 @@ public class SlurpeurMod extends Observable {
 	            if (--currentLeftSeconds == -1)
 	            {
 	            	slurpeur.setRunning(false);
-	            	currentLeftSeconds = 0;
 	                timer.cancel();
 	                timer.purge();
 	            }
@@ -74,7 +72,12 @@ public class SlurpeurMod extends Observable {
 	}
 	
 	
-   public void startThread() {      
+   public void startThread() throws LineUnavailableException, IOException, UnsupportedAudioFileException { 
+	  Clip music = AudioSystem.getClip();
+	  AudioInputStream inputStream = AudioSystem.getAudioInputStream(SlurpeurMod.class.getResourceAsStream("../../musics/Slurpeur.wav"));
+	  music.open(inputStream);
+	  music.start();
+	   
       if (!activity.isAlive()) {
          activity.start();
       }   

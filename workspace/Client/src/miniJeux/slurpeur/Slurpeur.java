@@ -27,7 +27,7 @@ public class Slurpeur extends MiniJeu implements Observer {
 	{
 		modele = new SlurpeurMod(difficulty, seed);
 		modele.addObserver(this);
-		view = new SlurpeurView(modele);
+		view = new SlurpeurView(modele, seed);
 		isModelInitialized = true;
 		
 		try {

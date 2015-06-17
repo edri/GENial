@@ -49,6 +49,7 @@ public class LetterHeroMod extends Observable implements Runnable
       
       timeToSlide = ((HAUTEUR + SIZE_FLAMES) * threadTime) / 1000.0;
       
+      running = true;
       activity = new Thread(this);
       
       task = new TimerTask() {
@@ -88,10 +89,10 @@ public class LetterHeroMod extends Observable implements Runnable
    
    public void startThread() throws LineUnavailableException, UnsupportedAudioFileException, IOException
    {
-      /*Clip music = AudioSystem.getClip();
-      AudioInputStream inputStream = AudioSystem.getAudioInputStream (LetterHeroMod.class.getResourceAsStream("music.wav"));
+      Clip music = AudioSystem.getClip();
+      AudioInputStream inputStream = AudioSystem.getAudioInputStream(LetterHeroMod.class.getResourceAsStream("../../musics/LetterHero.wav"));
       music.open(inputStream);
-      music.start(); */
+      music.start();
       
       if (!activity.isAlive())
          activity.start();

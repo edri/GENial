@@ -17,6 +17,8 @@ import java.sql.Time;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -65,10 +67,12 @@ public class SlurpeurView extends JFrame implements Observer {
 	
 	// Pour les bouttons qui disparaissent
 	private Timer alphaChanger;
+	
+	private int seed;
   
 	
-	public SlurpeurView(SlurpeurMod modele) throws IOException {
-		
+	public SlurpeurView(SlurpeurMod modele, int seed) throws IOException {
+		this.seed = seed;
 		this.panel = new JPanel();
 		addKeyListener(new KeyListener() {
 			
@@ -123,7 +127,7 @@ public class SlurpeurView extends JFrame implements Observer {
 			}
 		});
 
-		this.slurpeur = SlurpeurComponent.getInstance();
+		this.slurpeur = SlurpeurComponent.getInstance(seed);
 		this.slurpeur.addObserver(this);
 		
 		this.slurpeurview = new SlurpeurComponentView(modele);
@@ -195,7 +199,15 @@ public class SlurpeurView extends JFrame implements Observer {
 		setVisible(true);
 		setLocationRelativeTo(null);
 		
-		this.modele.startThread();
+		try {
+			this.modele.startThread();
+		} catch (LineUnavailableException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedAudioFileException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 	
 	
@@ -204,9 +216,10 @@ public class SlurpeurView extends JFrame implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		lblScore.setText("Score : " + modele.getScore() + " ");
-		if(modele.getCurrentLeftSeconds() == 0) {
+		if(modele.getCurrentLeftSeconds() == -1) {
 			lblScore.setVisible(false);
 			lblTermine.setVisible(true);
+			lblTime.setText("00:00");
 		} else {
 			lblTime.setText("00:" + (modele.getCurrentLeftSeconds() < 10 ? "0" + modele.getCurrentLeftSeconds() : modele.getCurrentLeftSeconds()));	
 		}	
