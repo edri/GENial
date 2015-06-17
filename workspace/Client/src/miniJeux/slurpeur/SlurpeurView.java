@@ -109,6 +109,38 @@ public class SlurpeurView extends JFrame implements Observer {
 		ImagePanel img = new ImagePanel(ImageIO.read(new File("images/Slurpeur/backgroundHerbe.jpg")));
 		getContentPane().add(img, null);
 		
+		img.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				modele.decrementerScore();
+			}
+		});
+		
 		img.addMouseMotionListener(new MouseMotionListener() {
 			
 			@Override

@@ -55,6 +55,10 @@ public class SlurpeurMod extends Observable {
 		};
 	}
 	
+	public void decrementerScore() {
+		score -= 5;
+	}
+	
 	public static int getDifficulty() {
 		return difficulty;
 	}
