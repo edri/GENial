@@ -55,6 +55,10 @@ public class SlurpeurMod extends Observable {
 		};
 	}
 	
+	public void decrementerScore() {
+		score -= 5;
+	}
+	
 	public static int getDifficulty() {
 		return difficulty;
 	}
@@ -78,10 +82,16 @@ public class SlurpeurMod extends Observable {
 	
 	
    public void startThread() throws LineUnavailableException, IOException, UnsupportedAudioFileException { 
-	  Clip music = AudioSystem.getClip();
-	  AudioInputStream inputStream = AudioSystem.getAudioInputStream(SlurpeurMod.class.getResourceAsStream("../../musics/Slurpeur.wav"));
-	  music.open(inputStream);
-	  music.start();
+	  try
+	  {
+		  Clip music = AudioSystem.getClip();
+		  AudioInputStream inputStream = AudioSystem.getAudioInputStream(SlurpeurMod.class.getResourceAsStream("../../musics/Slurpeur.wav"));
+		  music.open(inputStream);
+		  music.start();
+	  } catch (Exception e)
+	  {
+		   System.out.println("Impossible de charger la musique.");
+	  }
 	   
       if (!activity.isAlive()) {
          activity.start();
